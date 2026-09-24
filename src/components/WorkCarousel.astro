@@ -1,0 +1,95 @@
+---
+import Icon from './Icon.astro';
+import { photos, src, srcset } from '../data/photos';
+interface Props { title?: string; ids?: string[] }
+const { title = 'Recent work around Guelph', ids } = Astro.props;
+const list = ids ? ids.map((id) => photos.find((p) => p.id === id)!) : photos.slice(0, 10);
+---
+<section class="section work" data-carousel>
+  <div class="wrap work__head">
+    <div>
+      <h2>{title}</h2>
+      <p class="lede">Real jobs by our crew. No stock photos.</p>
+    </div>
+    <div class="work__controls">
+      <a href="/projects" class="text-link">See all projects <Icon name="arrow-right" /></a>
+      <button class="work__btn" data-prev aria-label="Previous photos"><Icon name="arrow-left" /></button>
+      <button class="work__btn" data-next aria-label="Next photos"><Icon name="arrow-right" /></button>
+    </div>
+  </div>
+  <ul class="work__track" data-track tabindex="0" aria-label="Project photos, scroll sideways">
+    {list.map((p, i) => (
+      <li class="work__item">
+        <a href="/projects" class="work__link">
+          <div class="photo work__photo">
+            <img src={src(p.id, 420, 520)} srcset={srcset(p.id, 420, 520)} sizes="(max-width: 640px) 78vw, 380px" alt={p.alt} loading={i < 3 ? 'eager' : 'lazy'} width="420" height="520" />
+          </div>
+          <span class="work__caption">{p.caption}</span>
+        </a>
+      </li>
+    ))}
+  </ul>
+</section>
+
+<style>
+  .work { overflow: hidden; }
+  .work__head { display: flex; justify-content: space-between; align-items: flex-end; gap: 1.5rem; flex-wrap: wrap; margin-bottom: 2rem; }
+  .work__head h2 { margin-bottom: 0.3em; }
+  .work__head .lede { margin: 0; }
+  .work__controls { display: flex; align-items: center; gap: 0.6rem; }
+  .work__controls .text-link { margin-right: 0.75rem; }
+  .work__btn {
+    display: grid; place-items: center; width: 44px; height: 44px; padding: 0;
+    border: 0; background: none; color: var(--moss-700); cursor: pointer;
+    transition: transform 160ms var(--ease-out), color 160ms ease, opacity 160ms ease;
+  }
+  .work__btn :global(svg) { width: 26px; height: 26px; }
+  .work__btn:active { transform: scale(0.9); }
+  .work__btn[aria-disabled='true'] { opacity: 0.3; cursor: default; }
+  @media (hover: hover) and (pointer: fine) {
+    .work__btn:not([aria-disabled='true']):hover { color: var(--moss-950); }
+    [data-prev]:not([aria-disabled='true']):hover { transform: translateX(-3px); }
+    [data-next]:not([aria-disabled='true']):hover { transform: translateX(3px); }
+  }
+
+  .work__track {
+    list-style: none; display: flex; gap: 1rem;
+    overflow-x: auto; scroll-snap-type: x mandatory; scrollbar-width: none;
+    /* The strip runs off the left edge of the screen (no dead space), and stays aligned to the text column on the right */
+    padding-inline: 0 max(var(--gutter), calc((100vw - var(--wrap)) / 2 + var(--gutter)));
+    scroll-padding-inline: 0;
+    padding-block: 6px 0.75rem;
+  }
+  .work__track::-webkit-scrollbar { display: none; }
+  .work__item { flex: 0 0 clamp(250px, 29vw, 360px); scroll-snap-align: start; }
+  .work__item:first-child .work__photo { border-top-left-radius: 0; border-bottom-left-radius: 0; }
+  .work__item:first-child .work__caption { padding-left: var(--gutter); }
+  .work__link { display: block; text-decoration: none; }
+  .work__photo { aspect-ratio: 21 / 26; }
+  .work__photo img { transition: transform 400ms var(--ease-out); }
+  @media (hover: hover) and (pointer: fine) { .work__link:hover .work__photo img { transform: scale(1.03); } }
+  .work__caption { display: block; margin-top: 0.75rem; font-weight: 600; }
+  @media (max-width: 640px) {
+    .work__item { flex-basis: 76vw; }
+    .work__btn { display: none; }
+  }
+</style>
+
+<script>
+  document.querySelectorAll<HTMLElement>('[data-carousel]').forEach((root) => {
+    const track = root.querySelector<HTMLElement>('[data-track]')!;
+    const prev = root.querySelector<HTMLButtonElement>('[data-prev]')!;
+    const next = root.querySelector<HTMLButtonElement>('[data-next]')!;
+    const step = () => (track.querySelector<HTMLElement>('li')?.offsetWidth ?? 300) + 16;
+    const behavior = (): ScrollBehavior => (matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth');
+    const update = () => {
+      prev.setAttribute('aria-disabled', String(track.scrollLeft < 8));
+      next.setAttribute('aria-disabled', String(track.scrollLeft + track.clientWidth > track.scrollWidth - 8));
+    };
+    prev.addEventListener('click', () => { if (prev.getAttribute('aria-disabled') !== 'true') track.scrollBy({ left: -step(), behavior: behavior() }); });
+    next.addEventListener('click', () => { if (next.getAttribute('aria-disabled') !== 'true') track.scrollBy({ left: step(), behavior: behavior() }); });
+    track.addEventListener('scrollend', update);
+    track.addEventListener('scroll', () => requestAnimationFrame(update), { passive: true });
+    update();
+  });
+</script>

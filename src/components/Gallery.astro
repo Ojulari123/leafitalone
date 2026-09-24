@@ -1,0 +1,150 @@
+---
+// Photo grid with optional category filter and a <dialog> lightbox.
+import Icon from './Icon.astro';
+import { categoryLabels, src, srcset, type Photo, type PhotoCategory } from '../data/photos';
+interface Props { items: Photo[]; filters?: boolean }
+const { items, filters = false } = Astro.props;
+const cats = [...new Set(items.map((p) => p.category))] as PhotoCategory[];
+const count = (c: PhotoCategory) => items.filter((p) => p.category === c).length;
+---
+<div class="gallery" data-gallery>
+  {filters && (
+    <div class="gallery__filters" role="group" aria-label="Filter photos">
+      <button aria-pressed="true" data-filter="all">All work <span>{items.length}</span></button>
+      {cats.map((c) => <button aria-pressed="false" data-filter={c}>{categoryLabels[c]} <span>{count(c)}</span></button>)}
+    </div>
+  )}
+  <p class="visually-hidden" aria-live="polite" data-filter-status></p>
+  <ul class="gallery__grid">
+    {items.map((p, i) => (
+      <li data-cat={p.category} class:list={['gallery__item', { 'gallery__item--tall': i % 5 === 0 }]}>
+        <button class="gallery__btn" data-index={i} data-full={src(p.id, 1600, 1200, 85)} data-caption={p.caption} data-alt={p.alt} aria-label={`Enlarge photo: ${p.caption}`}>
+          <img src={src(p.id, 600, i % 5 === 0 ? 800 : 450)} srcset={srcset(p.id, 600, i % 5 === 0 ? 800 : 450)} sizes="(max-width: 640px) 92vw, (max-width: 1023px) 46vw, 400px" alt={p.alt} loading={i < 6 ? 'eager' : 'lazy'} width="600" height={i % 5 === 0 ? 800 : 450} />
+          <span class="gallery__zoom" aria-hidden="true"><Icon name="arrows-out" /></span>
+        </button>
+        <p class="gallery__cap">{p.caption}</p>
+      </li>
+    ))}
+  </ul>
+
+  <dialog class="lightbox on-dark" data-lightbox aria-label="Photo viewer">
+    <figure>
+      <img data-lb-img alt="" />
+      <figcaption data-lb-cap aria-live="polite"></figcaption>
+    </figure>
+    <button class="lightbox__close" data-lb-close aria-label="Close photo"><Icon name="x" weight="bold" /></button>
+    <button class="lightbox__nav lightbox__nav--prev" data-lb-prev aria-label="Previous photo"><Icon name="arrow-left" weight="bold" /></button>
+    <button class="lightbox__nav lightbox__nav--next" data-lb-next aria-label="Next photo"><Icon name="arrow-right" weight="bold" /></button>
+  </dialog>
+</div>
+
+<style>
+  .gallery__filters { display: flex; flex-wrap: wrap; gap: 0.5rem; margin-bottom: 1.75rem; }
+  .gallery__filters button {
+    display: inline-flex; align-items: center; gap: 0.5rem;
+    padding: 0.6rem 1rem; border-radius: var(--r-pill); border: 1.5px solid var(--line-strong);
+    background: var(--white); font-weight: 700; cursor: pointer;
+    transition: background-color 180ms ease, border-color 180ms ease, transform 160ms var(--ease-out);
+  }
+  .gallery__filters button:active { transform: scale(0.97); }
+  .gallery__filters button span { font-size: 0.8rem; padding: 0.05rem 0.45rem; border-radius: var(--r-pill); background: var(--mist); }
+  .gallery__filters button[aria-pressed='true'] { background: var(--moss-600); border-color: var(--moss-600); color: var(--white); }
+  .gallery__filters button[aria-pressed='true'] span { background: var(--lime-400); color: var(--moss-950); }
+
+  .gallery__grid { list-style: none; columns: 3 300px; column-gap: 1rem; }
+  .gallery__item { break-inside: avoid; margin-bottom: 1.25rem; }
+  .gallery__item[hidden] { display: none; }
+  .gallery__btn { position: relative; display: block; width: 100%; padding: 0; border: 0; border-radius: var(--r-card); overflow: hidden; cursor: zoom-in; background: var(--mist-2); }
+  .gallery__btn img { width: 100%; transition: transform 400ms var(--ease-out); }
+  .gallery__zoom {
+    position: absolute; right: 0.75rem; bottom: 0.75rem; display: grid; place-items: center;
+    width: 40px; height: 40px; border-radius: 50%; background: rgba(251, 252, 248, 0.92); color: var(--moss-900);
+    opacity: 0; transform: scale(0.9); transition: opacity 200ms ease, transform 200ms var(--ease-out);
+  }
+  .gallery__zoom :global(svg) { width: 18px; height: 18px; }
+  @media (hover: hover) and (pointer: fine) {
+    .gallery__btn:hover img { transform: scale(1.03); }
+    .gallery__btn:hover .gallery__zoom { opacity: 1; transform: none; }
+  }
+  .gallery__btn:focus-visible .gallery__zoom { opacity: 1; transform: none; }
+  .gallery__cap { margin: 0.6rem 0 0; font-weight: 600; font-size: 0.95rem; }
+
+  .lightbox {
+    width: min(1100px, 94vw); max-height: 92vh; padding: 0; border: 0; border-radius: 20px;
+    background: var(--moss-950); color: var(--lime-100); overflow: visible;
+  }
+  .lightbox::backdrop { background: rgba(21, 30, 18, 0.82); }
+  .lightbox figure { margin: 0; }
+  .lightbox img { width: 100%; aspect-ratio: 4 / 3; max-height: 78vh; object-fit: contain; border-radius: 20px 20px 0 0; background: #0b0f09; }
+  .lightbox figcaption { padding: 0.9rem 1.25rem; font-weight: 600; }
+  .lightbox__close, .lightbox__nav {
+    position: absolute; display: grid; place-items: center; width: 48px; height: 48px; border-radius: 50%;
+    border: 0; background: var(--lime-400); color: var(--moss-950); cursor: pointer;
+    transition: transform 160ms var(--ease-out);
+  }
+  .lightbox__close:active, .lightbox__nav:active { transform: scale(0.94); }
+  .lightbox__close :global(svg), .lightbox__nav :global(svg) { width: 20px; height: 20px; }
+  .lightbox__close { top: -18px; right: -18px; }
+  .lightbox__nav { top: 50%; margin-top: -24px; }
+  .lightbox__nav--prev { left: -24px; }
+  .lightbox__nav--next { right: -24px; }
+  @media (max-width: 700px) {
+    .lightbox__nav { top: auto; bottom: -64px; margin: 0; }
+    .lightbox__nav--prev { left: calc(50% - 56px); }
+    .lightbox__nav--next { right: calc(50% - 56px); }
+    .lightbox__close { top: -60px; right: 0; }
+  }
+  @media (prefers-reduced-motion: no-preference) {
+    .lightbox[open] { animation: lbIn 240ms var(--ease-out); }
+  }
+  .lightbox[open]::backdrop { animation: lbFade 200ms ease-out; }
+  @keyframes lbIn { from { opacity: 0; transform: scale(0.97); } }
+  @keyframes lbFade { from { opacity: 0; } }
+</style>
+
+<script>
+  document.querySelectorAll<HTMLElement>('[data-gallery]').forEach((root) => {
+    const items = [...root.querySelectorAll<HTMLElement>('.gallery__item')];
+    const btns = [...root.querySelectorAll<HTMLButtonElement>('.gallery__btn')];
+    const filterBtns = [...root.querySelectorAll<HTMLButtonElement>('[data-filter]')];
+    filterBtns.forEach((b) =>
+      b.addEventListener('click', () => {
+        const f = b.dataset.filter;
+        filterBtns.forEach((x) => x.setAttribute('aria-pressed', String(x === b)));
+        items.forEach((it) => (it.hidden = f !== 'all' && it.dataset.cat !== f));
+        const shown = items.filter((it) => !it.hidden).length;
+        root.querySelector<HTMLElement>('[data-filter-status]')!.textContent = `Showing ${shown} photos`;
+        if (!matchMedia('(prefers-reduced-motion: reduce)').matches) {
+          root.querySelector('.gallery__grid')!.animate([{ opacity: 0 }, { opacity: 1 }], { duration: 200, easing: 'ease-out' });
+        }
+      })
+    );
+
+    const dlg = root.querySelector<HTMLDialogElement>('[data-lightbox]')!;
+    const img = dlg.querySelector<HTMLImageElement>('[data-lb-img]')!;
+    const cap = dlg.querySelector<HTMLElement>('[data-lb-cap]')!;
+    let current = 0;
+    let seq = 0;
+    const visible = () => btns.filter((b) => !b.closest<HTMLElement>('.gallery__item')!.hidden);
+    // Decode the next photo first so the image and caption change together
+    const show = async (btn: HTMLButtonElement) => {
+      const t = ++seq;
+      const list = visible();
+      current = list.indexOf(btn);
+      const next = new Image();
+      next.src = btn.dataset.full!;
+      try { await next.decode(); } catch {}
+      if (t !== seq) return;
+      img.src = next.src;
+      img.alt = btn.dataset.alt!;
+      cap.textContent = `Photo ${current + 1} of ${list.length}: ${btn.dataset.caption}`;
+    };
+    const step = (d: number) => { const v = visible(); show(v[(current + d + v.length) % v.length]); };
+    btns.forEach((b) => b.addEventListener('click', () => { show(b); dlg.showModal(); }));
+    dlg.querySelector('[data-lb-close]')!.addEventListener('click', () => dlg.close());
+    dlg.querySelector('[data-lb-prev]')!.addEventListener('click', () => step(-1));
+    dlg.querySelector('[data-lb-next]')!.addEventListener('click', () => step(1));
+    dlg.addEventListener('click', (e) => { if (e.target === dlg) dlg.close(); });
+    dlg.addEventListener('keydown', (e) => { if (e.key === 'ArrowRight') step(1); if (e.key === 'ArrowLeft') step(-1); });
+  });
+</script>

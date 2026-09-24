@@ -1,0 +1,31 @@
+---
+import Base from '../layouts/Base.astro';
+import Icon from '../components/Icon.astro';
+import { site } from '../data/site';
+---
+<Base title="Thanks, your request is in | Leaf It Alone" description="Your quote request was sent to Leaf It Alone." noindex>
+  <section class="ty stripes on-dark">
+    <div class="wrap ty__inner">
+      <span class="ty__icon"><Icon name="check" weight="bold" /></span>
+      <h1>Thanks, your request is in</h1>
+      <p class="lede">Josh will review it and get back to you with a quote, usually by your preferred contact method. If it is urgent, call {site.phone}.</p>
+      <div class="btn-row">
+        <a href="/projects" class="btn">See our recent work<span class="btn__icon"><Icon name="arrow-right" weight="bold" /></span></a>
+        <a href="/" class="btn btn--ghost">Back to home</a>
+      </div>
+    </div>
+  </section>
+</Base>
+
+<style>
+  .ty { position: relative; min-height: 70vh; display: grid; place-items: center; padding-block: 5rem; text-align: center; color: var(--lime-100); }
+  .ty::before { content: ''; position: absolute; inset: 0; background: rgba(21, 30, 18, 0.45); }
+  .ty__inner { position: relative; display: grid; justify-items: center; }
+  .ty__icon { display: grid; place-items: center; width: 72px; height: 72px; margin-bottom: 1.5rem; border-radius: 50%; background: var(--lime-400); color: var(--moss-950); }
+  .ty__icon :global(svg) { width: 34px; height: 34px; }
+  .ty h1 { color: var(--white); }
+  .ty .lede { margin-inline: auto; margin-bottom: 2rem; }
+  .ty .btn-row { justify-content: center; }
+  @media (prefers-reduced-motion: no-preference) { .ty__icon { animation: pop 500ms var(--ease-out) both; } }
+  @keyframes pop { from { opacity: 0; transform: scale(0.8); } }
+</style>

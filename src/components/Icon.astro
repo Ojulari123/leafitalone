@@ -1,0 +1,15 @@
+---
+// Phosphor icons, inlined at build time. Usage: <Icon name="leaf" />
+import { readFileSync } from 'node:fs';
+import { join } from 'node:path';
+
+interface Props { name: string; weight?: 'regular' | 'bold' | 'fill' | 'light'; class?: string; label?: string }
+const { name, weight = 'regular', class: className, label } = Astro.props;
+
+const root = join(process.cwd(), 'node_modules', '@phosphor-icons', 'core');
+const file = weight === 'regular' ? `${name}.svg` : `${name}-${weight}.svg`;
+let svg = readFileSync(join(root, 'assets', weight, file), 'utf8');
+const a11y = label ? `role="img" aria-label="${label}"` : 'aria-hidden="true" focusable="false"';
+svg = svg.replace('<svg ', `<svg ${a11y} ${className ? `class="${className}" ` : ''}`);
+---
+<Fragment set:html={svg} />

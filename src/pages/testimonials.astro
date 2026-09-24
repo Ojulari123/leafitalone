@@ -1,0 +1,88 @@
+---
+import Base from '../layouts/Base.astro';
+import PageHero from '../components/PageHero.astro';
+import Icon from '../components/Icon.astro';
+import CtaBand from '../components/CtaBand.astro';
+import { site } from '../data/site';
+import { reviews } from '../data/reviews';
+import { src } from '../data/photos';
+---
+<Base
+  title="Reviews | Leaf It Alone Lawn Care & Landscaping, Guelph"
+  description={`Read what Guelph homeowners say about Leaf It Alone. Rated ${site.rating.score} on Google from ${site.rating.count} reviews.`}
+>
+  <PageHero
+    title="What our customers say"
+    lede={`Rated ${site.rating.score} stars on Google from ${site.rating.count} reviews. Here are a few from Guelph homeowners.`}
+    crumbs={[{ label: 'Reviews' }]}
+  />
+
+  <section class="section">
+    <div class="wrap rv">
+      <div class="rv__score" data-reveal>
+        <p class="rv__big">{site.rating.score}</p>
+        <span class="stars rv__stars" role="img" aria-label={`${site.rating.score} out of 5 stars`}>{[1,2,3,4,5].map(() => <Icon name="star" weight="fill" />)}</span>
+        <p>Based on {site.rating.count} Google reviews</p>
+        <a href={site.googleReviewUrl} class="btn btn--moss btn--sm" target="_blank" rel="noopener">Read them on Google<span class="btn__icon"><Icon name="arrow-up-right" weight="bold" /></span></a>
+      </div>
+
+      <ul class="rv__list">
+        {reviews.map((r, i) => (
+          <li data-reveal style={`--i:${i}`}>
+            <figure class="rv__card">
+              <span class="stars" role="img" aria-label="5 out of 5 stars">{[1,2,3,4,5].map(() => <Icon name="star" weight="fill" />)}</span>
+              <blockquote>“{r.text}”</blockquote>
+              <figcaption>
+                <span class="rv__avatar" aria-hidden="true">{r.name.charAt(0)}</span>
+                <span><strong>{r.name}</strong><small>{r.service}, Guelph</small></span>
+              </figcaption>
+            </figure>
+          </li>
+        ))}
+        <li data-reveal style="--i:2">
+          <div class="rv__photo">
+            <img src={src('db3d51_0f98038914374cd78a3286a2a8141971', 720, 520)} alt="Backyard beside a pool with a blue spruce in a ring of fresh mulch" loading="lazy" width="720" height="520" />
+          </div>
+        </li>
+      </ul>
+    </div>
+  </section>
+
+  <section class="section section--mist section--tight">
+    <div class="wrap leave">
+      <div>
+        <h2>Had work done by Leaf It Alone?</h2>
+        <p class="lede">A quick Google review helps other people in Guelph find us, and it means a lot to Josh.</p>
+      </div>
+      <a href={site.googleReviewUrl} class="btn" target="_blank" rel="noopener">Leave a Google review<span class="btn__icon"><Icon name="star" weight="fill" /></span></a>
+    </div>
+  </section>
+
+  <CtaBand />
+</Base>
+
+<style>
+  .rv { display: grid; grid-template-columns: 300px 1fr; gap: clamp(2rem, 5vw, 4rem); align-items: start; }
+  .rv__score { position: sticky; top: calc(var(--header-h) + 24px); padding: 2rem; border-radius: 24px; background: var(--moss-600); color: var(--lime-100); text-align: center; display: grid; justify-items: center; gap: 0.5rem; }
+  .rv__big { margin: 0; font-family: var(--font-display); font-stretch: 75%; font-weight: 800; font-size: 5.5rem; line-height: 0.9; color: var(--white); }
+  .rv__stars :global(svg) { width: 24px; height: 24px; color: var(--lime-400); }
+  .rv__score p:not(.rv__big) { margin: 0 0 0.75rem; }
+  .rv__score .btn { --btn-bg: var(--lime-400); --btn-fg: var(--moss-950); --btn-icon-bg: var(--moss-900); --btn-icon-fg: var(--lime-400); }
+  .rv__list { list-style: none; display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+  .rv__card { margin: 0; height: 100%; padding: 1.75rem; border-radius: 22px; background: var(--white); border: 1px solid var(--line); display: flex; flex-direction: column; gap: 1rem; }
+  .rv__card blockquote { margin: 0; font-family: var(--font-display); font-stretch: 90%; font-weight: 700; font-size: 1.35rem; line-height: 1.25; flex: 1; }
+  .rv__card figcaption { display: flex; align-items: center; gap: 0.75rem; }
+  .rv__card figcaption small { display: block; color: var(--ink-soft); }
+  .rv__avatar { display: grid; place-items: center; width: 44px; height: 44px; border-radius: 12px; background: var(--lime-400); font-family: var(--font-display); font-weight: 800; font-size: 1.2rem; }
+  .rv__photo { grid-column: 1 / -1; border-radius: 22px; overflow: hidden; }
+  .rv__list li:last-child { grid-column: 1 / -1; }
+  .rv__photo img { width: 100%; aspect-ratio: 72 / 30; object-fit: cover; }
+  @media (max-width: 860px) {
+    .rv { grid-template-columns: 1fr; }
+    .rv__score { position: static; }
+    .rv__list { grid-template-columns: 1fr; }
+  }
+  .leave { display: flex; justify-content: space-between; align-items: center; gap: 2rem; flex-wrap: wrap; }
+  .leave h2 { margin-bottom: 0.3em; }
+  .leave .lede { margin: 0; }
+</style>

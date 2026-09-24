@@ -1,0 +1,70 @@
+---
+import Icon from './Icon.astro';
+import { site } from '../data/site';
+import { services } from '../data/services';
+interface Props { title?: string; text?: string; picks?: string[] }
+const {
+  title = 'Tell us about your yard',
+  text = 'Pick what you need and we will send a free, no-obligation quote.',
+  picks = ['lawn-mowing-guelph', 'fall-cleanups-guelph', 'spring-cleanup-guelph', 'mulch-installation-guelph', 'sod-installation-guelph', 'hedge-trimming-guelph'],
+} = Astro.props;
+const chosen = picks.map((slug) => services.find((s) => s.slug === slug)!).filter(Boolean);
+---
+<section class="cta stripes stripes--dark on-dark">
+  <div class="wrap cta__inner">
+    <div class="cta__copy">
+      <h2>{title}</h2>
+      <p class="lede">{text}</p>
+    </div>
+    <div class="cta__panel">
+      <p class="cta__label">Start with a service</p>
+      <ul class="cta__tiles">
+        {chosen.map((s) => (
+          <li>
+            <a href={`/contact?service=${s.slug}`} class="cta__tile">
+              <span class="cta__name">{s.short}</span>
+              <span class="cta__meta">{s.price ? `From ${s.price.from} ${s.price.unit}` : 'Free quote'}</span>
+              <Icon name="arrow-up-right" class="cta__arrow" />
+            </a>
+          </li>
+        ))}
+      </ul>
+      <div class="btn-row">
+        <a href="/contact" class="btn">Get a free quote<span class="btn__icon"><Icon name="arrow-right" weight="bold" /></span></a>
+        <a href={site.phoneHref} class="btn btn--ghost"><Icon name="phone" />{site.phone}</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<style>
+  .cta { padding-block: clamp(4rem, 8vw, 6rem); color: var(--lime-100); }
+  .cta__inner { display: grid; grid-template-columns: 1fr 1.1fr; gap: clamp(2rem, 5vw, 4rem); align-items: center; }
+  .cta h2 { color: var(--white); margin-bottom: 0.3em; }
+  .cta__copy .lede { margin: 0; }
+  .cta__panel {
+    padding: clamp(1.25rem, 3vw, 2rem);
+    border-radius: 24px;
+    background: rgba(21, 30, 18, 0.55);
+    border: 1px solid rgba(244, 250, 217, 0.12);
+  }
+  .cta__label { margin: 0 0 0.9rem; font-weight: 700; color: var(--lime-400); }
+  .cta__tiles { list-style: none; display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.5rem; margin-bottom: 1.5rem; }
+  .cta__tile {
+    position: relative; display: flex; flex-direction: column; justify-content: flex-end; gap: 0.15rem;
+    min-height: 92px; height: 100%; padding: 0.85rem 0.95rem;
+    border-radius: 14px; background: rgba(244, 250, 217, 0.06); border: 1px solid rgba(244, 250, 217, 0.14);
+    text-decoration: none;
+    transition: background-color 180ms ease, border-color 180ms ease, transform 160ms var(--ease-out);
+  }
+  .cta__tile:active { transform: scale(0.98); }
+  .cta__name { font-family: var(--font-display); font-stretch: 92%; font-weight: 700; font-size: 1.05rem; line-height: 1.15; color: var(--white); padding-right: 1.25rem; }
+  .cta__meta { font-size: 0.82rem; color: rgba(244, 250, 217, 0.72); }
+  .cta__tile :global(.cta__arrow) { position: absolute; top: 0.8rem; right: 0.8rem; width: 16px; height: 16px; color: var(--lime-400); transition: transform 200ms var(--ease-out); }
+  @media (hover: hover) and (pointer: fine) {
+    .cta__tile:hover { background: rgba(206, 235, 76, 0.12); border-color: rgba(206, 235, 76, 0.6); }
+    .cta__tile:hover :global(.cta__arrow) { transform: translate(2px, -2px); }
+  }
+  @media (max-width: 560px) { .cta__tiles { grid-template-columns: 1fr 1fr; } }
+  @media (max-width: 860px) { .cta__inner { grid-template-columns: 1fr; } }
+</style>

@@ -1,0 +1,22 @@
+---
+import Base from '../layouts/Base.astro';
+import PageHero from '../components/PageHero.astro';
+import { site } from '../data/site';
+---
+<Base title="Accessibility | Leaf It Alone" description="Leaf It Alone's commitment to an accessible website for everyone.">
+  <PageHero title="Accessibility" lede="We want everyone to be able to use this website and book our services." crumbs={[{ label: 'Accessibility' }]} />
+  <section class="section">
+    <div class="wrap">
+      <div class="prose">
+        <p>This website is built to follow the Web Content Accessibility Guidelines (WCAG) 2.2 at level AA. That includes readable text sizes and contrast, full keyboard navigation, visible focus indicators, descriptive image text, and reduced motion for visitors who prefer it.</p>
+        <h2>Need something in another format?</h2>
+        <p>If any part of this site is hard to use, or you would like information in another format, contact us and we will help. You can always request a quote by phone.</p>
+        <ul>
+          <li>Phone: <a href={site.phoneHref}>{site.phone}</a></li>
+          <li>Email: <a href={`mailto:${site.email}`}>{site.email}</a></li>
+        </ul>
+        <p>We welcome feedback and aim to respond within a few business days.</p>
+      </div>
+    </div>
+  </section>
+</Base>

@@ -1,0 +1,347 @@
+---
+import Logo from './Logo.astro';
+import Icon from './Icon.astro';
+import { site, nav } from '../data/site';
+import { services, groupLabels, type ServiceGroup } from '../data/services';
+
+const path = Astro.url.pathname.replace(/\/$/, '') || '/';
+const serviceSlugs = services.map((s) => `/${s.slug}`);
+const isActive = (href: string) =>
+  href === '/services' ? path === '/services' || serviceSlugs.includes(path) : path.startsWith(href);
+const groups = Object.keys(groupLabels) as ServiceGroup[];
+---
+<div class="topbar on-dark">
+  <div class="wrap topbar__inner">
+    <a class="topbar__season" href="/contact" data-season-banner>
+      <Icon name="calendar" />
+      <span data-season-text>Now booking fall cleanups in Guelph</span>
+      <Icon name="arrow-right" />
+    </a>
+    <div class="topbar__contact">
+      <a href={`mailto:${site.email}`}><Icon name="envelope" />{site.email}</a>
+      <a href={site.phoneHref}><Icon name="phone" />{site.phone}</a>
+    </div>
+  </div>
+</div>
+
+<header class="header" data-header>
+  <div class="wrap header__inner">
+    <a href="/" class="header__logo" aria-label="Leaf It Alone, home">
+      <Logo />
+    </a>
+
+    <nav class="nav" aria-label="Main">
+      <ul class="nav__list">
+        {nav.map((item) =>
+          item.href === '/services' ? (
+            <li class="nav__item nav__item--mega" data-mega>
+              <a href="/services" class:list={['nav__link', { 'is-active': isActive(item.href) }]} aria-current={isActive(item.href) ? 'page' : undefined}>
+                Services
+              </a>
+              <button class="nav__toggle" aria-expanded="false" aria-controls="mega-services" aria-label="Show all services" data-mega-toggle>
+                <Icon name="caret-down" />
+              </button>
+              <div class="mega" id="mega-services" data-mega-panel>
+                <div class="mega__grid">
+                  {groups.map((g) => (
+                    <div class="mega__col">
+                      <p class="mega__title">{groupLabels[g].name}</p>
+                      <ul>
+                        {services.filter((s) => s.group === g).map((s) => (
+                          <li>
+                            <a href={`/${s.slug}`} class="mega__link">
+                              <span class="mega__icon"><Icon name={s.icon} /></span>
+                              <span>{s.name}</span>
+                            </a>
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                  ))}
+                </div>
+                <div class="mega__foot">
+                  <span>Not sure what your yard needs? Describe it and Josh will suggest a plan.</span>
+                  <a href="/services" class="text-link">All services <Icon name="arrow-right" /></a>
+                </div>
+              </div>
+            </li>
+          ) : (
+            <li class="nav__item">
+              <a href={item.href} class:list={['nav__link', { 'is-active': isActive(item.href) }]} aria-current={isActive(item.href) ? 'page' : undefined}>
+                {item.label}
+              </a>
+            </li>
+          )
+        )}
+      </ul>
+    </nav>
+
+    <div class="header__actions">
+      <a href={site.phoneHref} class="header__phone" aria-label={`Call ${site.phone}`}>
+        <Icon name="phone" />
+        <span>{site.phone}</span>
+      </a>
+      <a href="/contact" class="btn btn--sm header__cta">
+        Get a free quote
+        <span class="btn__icon"><Icon name="arrow-right" weight="bold" /></span>
+      </a>
+      <button class="burger" aria-expanded="false" aria-controls="mobile-menu" data-burger>
+        <span class="visually-hidden">Menu</span>
+        <span class="burger__lines" aria-hidden="true"><span></span><span></span></span>
+      </button>
+    </div>
+  </div>
+</header>
+
+<div class="mobile-menu" id="mobile-menu" data-mobile-menu hidden>
+  <nav class="mobile-menu__inner wrap" aria-label="Mobile">
+    <ul class="mobile-menu__list">
+      <li style="--i:0"><a href="/">Home</a></li>
+      {nav.map((item, i) => (
+        <li style={`--i:${i + 1}`}><a href={item.href} aria-current={isActive(item.href) ? 'page' : undefined}>{item.label}</a></li>
+      ))}
+      <li style={`--i:${nav.length + 1}`}><a href="/faq">FAQ</a></li>
+    </ul>
+    <div class="mobile-menu__services">
+      <p class="mobile-menu__label">Services</p>
+      <div class="mobile-menu__chips">
+        {services.map((s) => <a class="chip" href={`/${s.slug}`}>{s.short}</a>)}
+      </div>
+    </div>
+    <div class="mobile-menu__cta">
+      <a href="/contact" class="btn">Get a free quote<span class="btn__icon"><Icon name="arrow-right" weight="bold" /></span></a>
+      <a href={site.phoneHref} class="btn btn--ghost"><Icon name="phone" />Call {site.phone}</a>
+    </div>
+  </nav>
+</div>
+
+<style>
+  .topbar { background: var(--moss-900); color: var(--lime-100); font-size: 0.9rem; }
+  .topbar__inner { display: flex; justify-content: space-between; align-items: center; gap: 1rem; min-height: 40px; }
+  .topbar a { display: inline-flex; align-items: center; gap: 0.45rem; text-decoration: none; opacity: 0.92; }
+  .topbar a:hover { opacity: 1; text-decoration: underline; text-underline-offset: 3px; }
+  .topbar :global(svg) { width: 16px; height: 16px; color: var(--lime-400); }
+  .topbar__season { font-weight: 600; }
+  .topbar__contact { display: flex; gap: 1.5rem; }
+  @media (max-width: 767px) {
+    .topbar__contact { display: none; }
+    .topbar__inner { justify-content: center; }
+  }
+
+  .header {
+    position: sticky;
+    top: 0;
+    z-index: 40;
+    background: rgba(251, 252, 248, 0.88);
+    backdrop-filter: saturate(160%) blur(14px);
+    -webkit-backdrop-filter: saturate(160%) blur(14px);
+    border-bottom: 1px solid transparent;
+    transition: border-color 200ms ease, box-shadow 200ms ease;
+  }
+  .header.is-scrolled { border-color: var(--line); box-shadow: 0 6px 24px -18px rgba(30, 42, 25, 0.5); }
+  .header__inner { display: flex; align-items: center; gap: 1.5rem; height: var(--header-h); }
+  .header__logo { text-decoration: none; flex: none; }
+
+  .nav { margin-left: auto; }
+  .nav__list { list-style: none; display: flex; align-items: center; gap: 0.15rem; }
+  .nav__item { position: relative; display: flex; align-items: center; }
+  .nav__link {
+    display: block;
+    padding: 0.5rem 0.7rem;
+    border-radius: var(--r-pill);
+    font-weight: 600;
+    font-size: 0.98rem;
+    text-decoration: none;
+    white-space: nowrap;
+    color: var(--ink);
+    transition: background-color 160ms ease;
+  }
+  .nav__link:hover { background: var(--mist); }
+  .nav__link.is-active { background: var(--lime-200); }
+  .nav__item--mega .nav__link { padding-right: 0.3rem; }
+  .nav__toggle {
+    display: grid; place-items: center;
+    width: 28px; height: 28px;
+    margin-left: -2px;
+    border: 0; background: none; border-radius: 50%; cursor: pointer;
+  }
+  .nav__toggle :global(svg) { width: 14px; height: 14px; transition: transform 200ms var(--ease-out); }
+  .nav__toggle[aria-expanded='true'] :global(svg) { transform: rotate(180deg); }
+
+  .mega {
+    position: absolute;
+    top: calc(100% + 14px);
+    left: -1rem;
+    width: min(760px, 90vw);
+    padding: 1.5rem;
+    border-radius: 22px;
+    background: var(--white);
+    border: 1px solid var(--line);
+    box-shadow: var(--shadow-lg);
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(-6px) scale(0.98);
+    transform-origin: top left;
+    transition: opacity 120ms var(--ease-out), transform 120ms var(--ease-out), visibility 0s linear 120ms;
+  }
+  .mega::before { content: ''; position: absolute; inset: -16px 0 auto; height: 16px; }
+  .nav__item--mega.is-open .mega {
+    opacity: 1; visibility: visible; transform: none;
+    transition: opacity 180ms var(--ease-out), transform 180ms var(--ease-out), visibility 0s;
+  }
+  .mega__grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1.25rem; }
+  .mega__title {
+    font-family: var(--font-display); font-stretch: 100%; font-weight: 700; font-size: 0.78rem;
+    letter-spacing: 0.08em; text-transform: uppercase; color: var(--moss-500); margin: 0 0 0.6rem;
+  }
+  .mega ul { list-style: none; display: grid; gap: 0.15rem; }
+  .mega__link {
+    display: flex; align-items: center; gap: 0.55rem;
+    padding: 0.45rem 0.5rem; margin-left: -0.5rem;
+    border-radius: 10px; font-weight: 600; font-size: 0.95rem; line-height: 1.25; text-decoration: none;
+  }
+  .mega__link:hover { background: var(--mist); }
+  .mega__icon {
+    display: grid; place-items: center; flex: none;
+    width: 30px; height: 30px; border-radius: 9px; background: var(--lime-100); color: var(--moss-600);
+  }
+  .mega__icon :global(svg) { width: 17px; height: 17px; }
+  .mega__foot {
+    display: flex; justify-content: space-between; align-items: center; gap: 1rem;
+    margin-top: 1.25rem; padding-top: 1rem; border-top: 1px solid var(--line);
+    font-size: 0.92rem; color: var(--ink-soft);
+  }
+
+  .header__actions { display: flex; align-items: center; gap: 0.75rem; flex: none; }
+  .header__phone {
+    display: inline-flex; align-items: center; gap: 0.4rem;
+    font-weight: 700; text-decoration: none; white-space: nowrap; padding: 0.4rem 0.2rem;
+  }
+  .header__phone :global(svg) { width: 18px; height: 18px; color: var(--moss-600); }
+
+  .burger {
+    display: none;
+    width: 46px; height: 46px; border-radius: 50%;
+    border: 1px solid var(--line-input); background: var(--white); cursor: pointer;
+    transition: transform 160ms var(--ease-out);
+  }
+  .burger:active { transform: scale(0.94); }
+  .burger__lines { position: relative; display: block; width: 18px; height: 12px; margin: auto; }
+  .burger__lines span {
+    position: absolute; left: 0; width: 100%; height: 2px; border-radius: 2px; background: var(--ink);
+    transition: transform 200ms var(--ease-out);
+  }
+  .burger__lines span:first-child { top: 2px; }
+  .burger__lines span:last-child { top: 8px; }
+  .burger[aria-expanded='true'] .burger__lines span:first-child { transform: translateY(3px) rotate(45deg); }
+  .burger[aria-expanded='true'] .burger__lines span:last-child { transform: translateY(-3px) rotate(-45deg); }
+
+  @media (max-width: 1180px) {
+    .header__phone span { display: none; }
+    .header__phone { padding: 0.6rem; border-radius: 50%; border: 1px solid var(--line-strong); }
+    .nav__link { padding-inline: 0.55rem; }
+  }
+  @media (max-width: 1119px) {
+    .nav { display: none; }
+    .burger { display: block; }
+    .header__actions { margin-left: auto; }
+  }
+  @media (max-width: 560px) {
+    .header__cta, .header__phone { display: none; }
+  }
+
+  .mobile-menu {
+    position: fixed; inset: calc(var(--header-h)) 0 0; z-index: 50;
+    background: var(--paper);
+    overflow-y: auto;
+    padding-block: 1.5rem 6rem;
+  }
+  .mobile-menu[hidden] { display: none; }
+  .mobile-menu__list { list-style: none; display: grid; }
+  .mobile-menu__list a {
+    display: block; padding: 0.55rem 0;
+    font-family: var(--font-display); font-stretch: 82%; font-weight: 800; font-size: 2rem;
+    text-decoration: none; border-bottom: 1px solid var(--line);
+  }
+  .mobile-menu__list a[aria-current='page'] { color: var(--moss-600); }
+  .mobile-menu__label {
+    margin: 2rem 0 0.75rem; font-family: var(--font-display); font-weight: 700; font-size: 0.8rem;
+    letter-spacing: 0.08em; text-transform: uppercase; color: var(--moss-500);
+  }
+  .mobile-menu__chips { display: flex; flex-wrap: wrap; gap: 0.5rem; }
+  .mobile-menu__cta { display: grid; gap: 0.75rem; margin-top: 2rem; }
+  .mobile-menu__cta .btn { justify-content: space-between; }
+  .mobile-menu__cta .btn--ghost { justify-content: center; }
+  .mobile-menu.is-open { animation: menuFade 160ms ease-out; }
+  @keyframes menuFade { from { opacity: 0; } }
+  @media (prefers-reduced-motion: no-preference) {
+    .mobile-menu.is-open .mobile-menu__list li { animation: menuIn 300ms var(--ease-out) both; animation-delay: calc(var(--i) * 30ms); }
+  }
+  @keyframes menuIn { from { opacity: 0; transform: translateY(8px); } }
+</style>
+
+<script>
+  // Header shadow once the page scrolls (IntersectionObserver on a sentinel, no scroll listener)
+  const header = document.querySelector<HTMLElement>('[data-header]');
+  const sentinel = document.createElement('div');
+  sentinel.style.cssText = 'position:absolute;top:0;height:60px;width:1px;pointer-events:none';
+  document.body.prepend(sentinel);
+  new IntersectionObserver(([e]) => header?.classList.toggle('is-scrolled', !e.isIntersecting)).observe(sentinel);
+
+  // Services mega menu: hover on pointer devices, click everywhere, Esc to close
+  const mega = document.querySelector<HTMLElement>('[data-mega]');
+  const toggle = document.querySelector<HTMLButtonElement>('[data-mega-toggle]');
+  let closeTimer: number | undefined;
+  let openTimer: number | undefined;
+  let viaHover = false;
+  const setMega = (open: boolean) => {
+    mega?.classList.toggle('is-open', open);
+    toggle?.setAttribute('aria-expanded', String(open));
+  };
+  if (mega && toggle) {
+    toggle.addEventListener('click', () => {
+      if (viaHover) { viaHover = false; setMega(true); return; }
+      setMega(!mega.classList.contains('is-open'));
+    });
+    if (matchMedia('(hover: hover) and (pointer: fine)').matches) {
+      mega.addEventListener('mouseenter', () => {
+        clearTimeout(closeTimer);
+        openTimer = window.setTimeout(() => { viaHover = !mega.classList.contains('is-open'); setMega(true); }, 80);
+      });
+      mega.addEventListener('mouseleave', () => {
+        clearTimeout(openTimer);
+        viaHover = false;
+        closeTimer = window.setTimeout(() => setMega(false), 140);
+      });
+    }
+    mega.addEventListener('focusout', (e) => { if (!mega.contains(e.relatedTarget as Node)) setMega(false); });
+    document.addEventListener('keydown', (e) => { if (e.key === 'Escape' && mega.classList.contains('is-open')) { setMega(false); toggle.focus(); } });
+  }
+
+  // Mobile menu
+  const burger = document.querySelector<HTMLButtonElement>('[data-burger]');
+  const menu = document.querySelector<HTMLElement>('[data-mobile-menu]');
+  const setMenu = (open: boolean) => {
+    if (!menu || !burger) return;
+    burger.setAttribute('aria-expanded', String(open));
+    if (open && header) menu.style.top = `${Math.max(0, header.getBoundingClientRect().bottom)}px`;
+    menu.hidden = !open;
+    menu.classList.toggle('is-open', open);
+    document.documentElement.style.overflow = open ? 'hidden' : '';
+    ['main', 'footer', '.mbar', '.topbar'].forEach((sel) => { const el = document.querySelector<HTMLElement>(sel); if (el) el.inert = open; });
+  };
+  burger?.addEventListener('click', () => setMenu(burger.getAttribute('aria-expanded') !== 'true'));
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && burger?.getAttribute('aria-expanded') === 'true') { setMenu(false); burger.focus(); }
+  });
+  matchMedia('(min-width: 1120px)').addEventListener('change', (e) => { if (e.matches) setMenu(false); });
+
+  // Seasonal banner text
+  const m = new Date().getMonth();
+  const msg =
+    m >= 8 && m <= 10 ? 'Now booking fall cleanups in Guelph'
+    : m >= 3 && m <= 4 ? 'Now booking spring cleanups and mowing'
+    : m >= 5 && m <= 7 ? 'Now booking mowing, hedges and garden projects'
+    : 'Book your spring cleanup early';
+  document.querySelectorAll('[data-season-text]').forEach((el) => (el.textContent = msg));
+</script>

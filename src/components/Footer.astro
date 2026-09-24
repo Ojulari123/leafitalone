@@ -1,0 +1,89 @@
+---
+import Logo from './Logo.astro';
+import Icon from './Icon.astro';
+import { site } from '../data/site';
+import { services } from '../data/services';
+const year = new Date().getFullYear();
+---
+<footer class="footer on-dark">
+  <div class="wrap footer__grid">
+    <div class="footer__brand">
+      <Logo tone="light" />
+      <p>Locally owned lawn care and landscaping for Guelph homes. Mowing from $55 a visit, plus cleanups, sod, mulch and stone.</p>
+      <div class="footer__contact">
+        <a href={site.phoneHref}><Icon name="phone" />{site.phone}</a>
+        <a href={`mailto:${site.email}`}><Icon name="envelope" />{site.email}</a>
+        <span><Icon name="map-pin" />Guelph, Ontario and surrounding area</span>
+        {site.hours && <span><Icon name="clock" />{site.hours}</span>}
+      </div>
+      {site.social.facebook && (
+        <a class="footer__social" href={site.social.facebook} target="_blank" rel="noopener">
+          <Icon name="facebook-logo" />Follow on Facebook
+        </a>
+      )}
+    </div>
+
+    <div>
+      <p class="footer__title">Services</p>
+      <ul class="footer__links footer__links--2col">
+        {services.map((s) => <li><a href={`/${s.slug}`}>{s.name}</a></li>)}
+      </ul>
+    </div>
+
+    <div>
+      <p class="footer__title">Company</p>
+      <ul class="footer__links">
+        <li><a href="/about">About Josh</a></li>
+        <li><a href="/projects">Projects</a></li>
+        <li><a href="/testimonials">Reviews</a></li>
+        <li><a href="/service-areas">Service areas</a></li>
+        <li><a href="/faq">FAQ</a></li>
+        <li><a href="/blog">Blog</a></li>
+        <li><a href="/contact">Get a free quote</a></li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="wrap footer__bottom">
+    <span>© {year} {site.legalName}. Guelph, Ontario.</span>
+    <span class="footer__legal">
+      <a href="/privacy">Privacy</a>
+      <a href="/accessibility">Accessibility</a>
+    </span>
+  </div>
+</footer>
+
+<style>
+  .footer { background: var(--moss-950); color: rgba(244, 250, 217, 0.78); padding: clamp(3.5rem, 7vw, 5rem) 0 0; }
+  .footer__grid { display: grid; grid-template-columns: 1.3fr 1.2fr 0.7fr; gap: clamp(2rem, 5vw, 4rem); }
+  .footer__brand p { margin: 1.25rem 0; max-width: 36ch; }
+  .footer__contact { display: grid; gap: 0.6rem; }
+  .footer__contact a, .footer__contact span, .footer__social { display: inline-flex; align-items: center; gap: 0.6rem; text-decoration: none; color: var(--lime-100); }
+  .footer__contact a:hover, .footer__social:hover { color: var(--lime-400); }
+  .footer :global(svg) { width: 18px; height: 18px; color: var(--lime-400); flex: none; }
+  .footer__social { margin-top: 1.25rem; font-weight: 600; }
+  .footer__title {
+    margin: 0 0 1rem; font-family: var(--font-display); font-weight: 700; font-size: 0.8rem;
+    letter-spacing: 0.1em; text-transform: uppercase; color: var(--lime-400);
+  }
+  .footer__links { list-style: none; display: grid; gap: 0.55rem; }
+  .footer__links--2col { grid-template-columns: 1fr 1fr; column-gap: 1.5rem; }
+  .footer__links a { text-decoration: none; }
+  .footer__links a:hover { color: var(--lime-100); text-decoration: underline; text-underline-offset: 3px; }
+  .footer__bottom {
+    display: flex; justify-content: space-between; flex-wrap: wrap; gap: 1rem;
+    margin-top: clamp(2.5rem, 5vw, 4rem); padding-block: 1.5rem;
+    border-top: 1px solid rgba(244, 250, 217, 0.12); font-size: 0.9rem;
+  }
+  .footer__legal { display: flex; gap: 1.25rem; }
+  .footer__legal a { text-decoration: none; }
+  .footer__legal a:hover { text-decoration: underline; }
+  @media (max-width: 900px) {
+    .footer__grid { grid-template-columns: 1fr 1fr; }
+    .footer__brand { grid-column: 1 / -1; }
+  }
+  @media (max-width: 560px) {
+    .footer__grid { grid-template-columns: 1fr; }
+    .footer { padding-bottom: 76px; }
+  }
+</style>

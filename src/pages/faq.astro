@@ -1,0 +1,68 @@
+---
+import Base from '../layouts/Base.astro';
+import PageHero from '../components/PageHero.astro';
+import FaqList from '../components/FaqList.astro';
+import Icon from '../components/Icon.astro';
+import CtaBand from '../components/CtaBand.astro';
+import { site } from '../data/site';
+import { generalFaqs } from '../data/faqs';
+import { services } from '../data/services';
+
+const all = generalFaqs.flatMap((g) => g.items);
+const slug = (t: string) => t.toLowerCase().replace(/[^a-z]+/g, '-').replace(/(^-|-$)/g, '');
+---
+<Base
+  title="Lawn Care & Landscaping FAQ | Leaf It Alone, Guelph"
+  description="Answers to common questions about Leaf It Alone: quotes and pricing, scheduling, rain days, yard waste, service areas and more."
+>
+  <PageHero title="Questions, answered" lede="Quick answers about quotes, pricing and how we work. Still wondering about something? Just ask Josh." crumbs={[{ label: 'FAQ' }]} />
+
+  <section class="section">
+    <div class="wrap faqpage">
+      <nav class="faqpage__toc" aria-label="FAQ topics">
+        <p class="faqpage__label">Topics</p>
+        <ul>
+          {generalFaqs.map((g) => <li><a href={`#${slug(g.topic)}`}>{g.topic}</a></li>)}
+          <li><a href="#services">By service</a></li>
+        </ul>
+        <div class="faqpage__ask">
+          <p><strong>Still have a question?</strong></p>
+          <a href={site.phoneHref} class="text-link"><Icon name="phone" />{site.phone}</a>
+          <a href={`mailto:${site.email}`} class="text-link"><Icon name="envelope" />Email Josh</a>
+        </div>
+      </nav>
+      <div class="faqpage__body">
+        {generalFaqs.map((g) => (
+          <div id={slug(g.topic)} class="faqpage__group">
+            <h2>{g.topic}</h2>
+            <FaqList items={g.items} schema={false} />
+          </div>
+        ))}
+        <div id="services" class="faqpage__group">
+          <h2>By service</h2>
+          <p class="muted">Each service page has its own questions and answers.</p>
+          <ul class="faqpage__svc">
+            {services.map((s) => <li><a class="chip" href={`/${s.slug}#faq`}><Icon name={s.icon} />{s.name}</a></li>)}
+          </ul>
+        </div>
+      </div>
+    </div>
+  </section>
+  <script type="application/ld+json" set:html={JSON.stringify({ '@context': 'https://schema.org', '@type': 'FAQPage', mainEntity: all.map((f) => ({ '@type': 'Question', name: f.q, acceptedAnswer: { '@type': 'Answer', text: f.a } })) })} />
+  <CtaBand />
+</Base>
+
+<style>
+  .faqpage { display: grid; grid-template-columns: 240px 1fr; gap: clamp(2rem, 5vw, 4rem); align-items: start; }
+  .faqpage__toc { position: sticky; top: calc(var(--header-h) + 24px); }
+  .faqpage__label { font-weight: 700; font-size: 0.85rem; color: var(--moss-500); margin-bottom: 0.5rem; }
+  .faqpage__toc ul { list-style: none; display: grid; gap: 0.2rem; }
+  .faqpage__toc ul a { display: block; padding: 0.45rem 0.75rem; margin-left: -0.75rem; border-radius: 10px; font-weight: 600; text-decoration: none; }
+  .faqpage__toc ul a:hover { background: var(--mist); }
+  .faqpage__ask { display: grid; gap: 0.5rem; margin-top: 2rem; padding: 1.25rem; border-radius: 18px; background: var(--lime-100); }
+  .faqpage__ask p { margin: 0; }
+  .faqpage__group + .faqpage__group { margin-top: 3rem; }
+  .faqpage__group h2 { font-size: clamp(1.6rem, 3vw, 2.2rem); }
+  .faqpage__svc { list-style: none; display: flex; flex-wrap: wrap; gap: 0.5rem; }
+  @media (max-width: 860px) { .faqpage { grid-template-columns: 1fr; } .faqpage__toc { position: static; } }
+</style>

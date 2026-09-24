@@ -1,0 +1,45 @@
+---
+import Base from '../layouts/Base.astro';
+import PageHero from '../components/PageHero.astro';
+import { site } from '../data/site';
+const updated = 'September 24, 2026';
+---
+<Base title="Privacy Policy | Leaf It Alone" description="How Leaf It Alone collects, uses and protects the personal information you share with us.">
+  <PageHero title="Privacy policy" lede={`Last updated ${updated}`} crumbs={[{ label: 'Privacy policy' }]} />
+  <section class="section">
+    <div class="wrap">
+      <div class="prose">
+        <p>Leaf It Alone ("we", "us") is a lawn care and landscaping business in Guelph, Ontario. We follow Canada's <em>Personal Information Protection and Electronic Documents Act</em> (PIPEDA). This page explains what we collect, why, and the choices you have.</p>
+
+        <h2>What we collect</h2>
+        <ul>
+          <li><strong>Contact details:</strong> your name, email address and phone number.</li>
+          <li><strong>Property details:</strong> the service address, yard size, the services you want and any notes you add.</li>
+          <li><strong>Photos</strong> you choose to upload with a quote request.</li>
+          <li><strong>Basic website data</strong> such as pages visited, collected by our hosting provider to keep the site running and secure.</li>
+        </ul>
+
+        <h2>Why we collect it</h2>
+        <p>We use your information to prepare your quote, schedule and carry out the work, contact you about your service, and send invoices. We do not sell or rent your information to anyone.</p>
+
+        <h2>Seasonal reminders</h2>
+        <p>We only send marketing messages, like seasonal booking reminders, if you tick the box on our quote form or otherwise ask us to. Every message includes a way to unsubscribe, and you can also reply or email {site.email} to stop them. This follows Canada's anti-spam legislation (CASL).</p>
+
+        <h2>Who we share it with</h2>
+        <p>We share information only with service providers that help us run the business, for example our website host and form service, our email provider and our scheduling or invoicing tools. These providers may store data outside Canada, in which case it may be subject to the laws of that country. They may use your information only to provide their service to us.</p>
+
+        <h2>How long we keep it</h2>
+        <p>Quote requests that do not turn into a booking are deleted within 12 months. Customer records are kept as long as you are a customer and as required for tax and accounting purposes.</p>
+
+        <h2>How we protect it</h2>
+        <p>We use reasonable safeguards, including password-protected accounts and limited access, to protect your information from loss or misuse.</p>
+
+        <h2>Your choices</h2>
+        <p>You can ask to see, correct or delete the personal information we hold about you. You can also withdraw consent for marketing at any time.</p>
+
+        <h2>Contact</h2>
+        <p>Questions or requests about privacy can be sent to {site.owner}, owner, at <a href={`mailto:${site.email}`}>{site.email}</a> or {site.phone}. If you are not satisfied with our response, you can contact the <a href="https://www.priv.gc.ca/" rel="noopener">Office of the Privacy Commissioner of Canada</a>.</p>
+      </div>
+    </div>
+  </section>
+</Base>

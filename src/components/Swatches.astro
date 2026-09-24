@@ -1,0 +1,44 @@
+---
+import { mulchOptions, stoneOptions } from '../data/services';
+interface Props { kind: 'mulch' | 'stone' }
+const { kind } = Astro.props;
+const list = kind === 'mulch' ? mulchOptions : stoneOptions;
+---
+<ul class:list={['swatches', `swatches--${kind}`]}>
+  {list.map((m) => (
+    <li class="sw">
+      <span class="sw__chip" style={`--a:${m.swatch[0]};--b:${m.swatch[1]};--c:${m.swatch[2]}`} aria-hidden="true"></span>
+      <span class="sw__name">{m.name}</span>
+      <span class="sw__note">{m.note}</span>
+    </li>
+  ))}
+</ul>
+
+<style>
+  .swatches { list-style: none; display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; }
+  .sw { display: grid; gap: 0.2rem; }
+  .sw__chip {
+    display: block; aspect-ratio: 4 / 3; border-radius: 16px; margin-bottom: 0.6rem;
+    box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.08);
+  }
+  /* Mulch: shredded fibre texture */
+  .swatches--mulch .sw__chip {
+    background:
+      radial-gradient(ellipse 5px 2px at 30% 40%, var(--b) 70%, transparent 75%) 0 0 / 13px 9px,
+      radial-gradient(ellipse 2px 5px at 60% 50%, var(--c) 70%, transparent 75%) 0 0 / 11px 14px,
+      radial-gradient(ellipse 6px 2px at 50% 70%, var(--c) 70%, transparent 75%) 4px 3px / 17px 12px,
+      radial-gradient(circle at 20% 80%, var(--b) 0 1.5px, transparent 2.5px) 0 0 / 7px 8px,
+      linear-gradient(160deg, var(--a), var(--c));
+  }
+  /* Stone: pebbles */
+  .swatches--stone .sw__chip {
+    background:
+      radial-gradient(ellipse 9px 7px at 30% 40%, var(--b) 60%, transparent 64%) 0 0 / 26px 22px,
+      radial-gradient(ellipse 8px 6px at 70% 70%, var(--c) 60%, transparent 64%) 0 0 / 22px 20px,
+      radial-gradient(ellipse 6px 5px at 50% 20%, var(--b) 60%, transparent 64%) 6px 4px / 18px 16px,
+      linear-gradient(135deg, var(--a), var(--c));
+  }
+  .sw__name { font-weight: 700; }
+  .sw__note { font-size: 0.92rem; color: var(--ink-soft); line-height: 1.4; }
+  @media (max-width: 640px) { .swatches { grid-template-columns: 1fr 1fr; } }
+</style>

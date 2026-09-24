@@ -1,0 +1,503 @@
+---
+import Base from '../layouts/Base.astro';
+import PageHero from '../components/PageHero.astro';
+import Icon from '../components/Icon.astro';
+import { site } from '../data/site';
+import { services, groupLabels, mulchOptions, stoneOptions, type ServiceGroup } from '../data/services';
+import { reviews } from '../data/reviews';
+
+const groups = Object.keys(groupLabels) as ServiceGroup[];
+const review = reviews[0];
+---
+<Base
+  title="Get a Free Quote | Leaf It Alone Lawn Care & Landscaping, Guelph"
+  description="Request a free, no-obligation quote for lawn mowing, cleanups, sod, mulch, stone and more in Guelph. Takes about two minutes. Or call Josh at 519-400-0237."
+>
+  <PageHero
+    title="Get a free quote"
+    lede="Tell us what you need. It takes about two minutes, and there is no obligation to book."
+    crumbs={[{ label: 'Get a free quote' }]}
+  />
+
+  <section class="section quote-section">
+    <div class="wrap quote">
+      <form
+        class="qform"
+        name="quote"
+        method="POST"
+        action="/thank-you"
+        enctype="multipart/form-data"
+        data-netlify="true"
+        netlify-honeypot="bot-field"
+        novalidate
+        data-quote
+      >
+        <input type="hidden" name="form-name" value="quote" />
+        <p class="visually-hidden" aria-hidden="true"><label>Leave this empty <input name="bot-field" tabindex="-1" autocomplete="off" /></label></p>
+        <input type="hidden" name="services_list" data-services-list />
+
+        <ol class="qprog" aria-label="Quote steps" data-progress>
+          <li class="is-current" aria-current="step" data-prog="1"><span>1</span>Services</li>
+          <li data-prog="2"><span>2</span>Your property</li>
+          <li data-prog="3"><span>3</span>Contact details</li>
+        </ol>
+
+        <!-- Step 1 -->
+        <fieldset class="qstep is-current" data-step="1">
+          <legend class="qstep__title"><span class="visually-hidden">Step 1 of 3: </span>What do you need done?</legend>
+          <p class="qstep__hint">Choose everything that applies. You can bundle services into one visit.</p>
+          {groups.map((g) => (
+            <div class="qgroup">
+              <p class="qgroup__name">{groupLabels[g].name}</p>
+              <div class="qopts">
+                {services.filter((s) => s.group === g).map((s) => (
+                  <label class="qopt">
+                    <input type="checkbox" name="services" value={s.name} data-slug={s.slug} />
+                    <span class="qopt__box">
+                      <span class="qopt__icon"><Icon name={s.icon} /></span>
+                      <span class="qopt__text">
+                        <span class="qopt__name">{s.name}</span>
+                        {s.price ? <span class="qopt__meta">From {s.price.from} {s.price.unit}</span> : <span class="qopt__meta">Custom quote</span>}
+                      </span>
+                      <span class="qopt__check"><Icon name="check" weight="bold" /></span>
+                    </span>
+                  </label>
+                ))}
+              </div>
+            </div>
+          ))}
+          <div class="qgroup">
+            <div class="qopts">
+              <label class="qopt">
+                <input type="checkbox" name="services" value="Something else" />
+                <span class="qopt__box">
+                  <span class="qopt__icon"><Icon name="chat-circle-text" /></span>
+                  <span class="qopt__text"><span class="qopt__name">Something else</span><span class="qopt__meta">Describe it in the next step</span></span>
+                  <span class="qopt__check"><Icon name="check" weight="bold" /></span>
+                </span>
+              </label>
+            </div>
+          </div>
+          <p class="qerr" data-err-services role="alert" hidden><Icon name="info" />Choose at least one service to continue.</p>
+          <div class="qnav">
+            <span></span>
+            <button type="button" class="btn" data-next>Continue<span class="btn__icon"><Icon name="arrow-right" weight="bold" /></span></button>
+          </div>
+        </fieldset>
+
+        <!-- Step 2 -->
+        <fieldset class="qstep" data-step="2">
+          <legend class="qstep__title"><span class="visually-hidden">Step 2 of 3: </span>About your property</legend>
+          <p class="qstep__hint">This helps us price the job without guessing.</p>
+
+          <div class="field">
+            <label for="address">Street address in Guelph or nearby</label>
+            <input id="address" name="address" type="text" autocomplete="street-address" required placeholder="e.g. 42 Water Street, Guelph" />
+            <p class="field__err" id="address-err" hidden>Enter the address where the work will be done.</p>
+          </div>
+
+          <div class="field">
+            <span class="field__label" id="size-label">Roughly how big is the yard?</span>
+            <div class="seg" role="radiogroup" aria-labelledby="size-label">
+              {['Small city lot', 'Average lot', 'Large or corner lot', 'Not sure'].map((v, i) => (
+                <label class="seg__opt"><input type="radio" name="yard_size" value={v} checked={i === 3} /><span>{v}</span></label>
+              ))}
+            </div>
+          </div>
+
+          <div class="field-row">
+            <div class="field">
+              <span class="field__label" id="freq-label">One-time or ongoing?</span>
+              <div class="seg" role="radiogroup" aria-labelledby="freq-label">
+                {['One-time job', 'Weekly', 'Bi-weekly', 'Not sure'].map((v, i) => (
+                  <label class="seg__opt"><input type="radio" name="frequency" value={v} checked={i === 0} /><span>{v}</span></label>
+                ))}
+              </div>
+            </div>
+          </div>
+
+          <div class="field">
+            <label for="timing">When would you like it done?</label>
+            <select id="timing" name="timing">
+              <option>As soon as possible</option>
+              <option>Within the next 2 weeks</option>
+              <option>This month</option>
+              <option>Next season</option>
+              <option>I am flexible</option>
+            </select>
+          </div>
+
+          <div class="field" data-when="mulch-installation-guelph" hidden>
+            <span class="field__label" id="mulch-label">Mulch colour</span>
+            <div class="swpick" role="radiogroup" aria-labelledby="mulch-label">
+              {mulchOptions.map((m) => (
+                <label class="swpick__opt">
+                  <input type="radio" name="mulch_colour" value={m.name} />
+                  <span class="swpick__chip" style={`--a:${m.swatch[0]};--c:${m.swatch[2]}`}></span>
+                  <span>{m.name}</span>
+                </label>
+              ))}
+              <label class="swpick__opt"><input type="radio" name="mulch_colour" value="Not sure" checked /><span class="swpick__chip swpick__chip--unsure">?</span><span>Not sure</span></label>
+            </div>
+          </div>
+
+          <div class="field" data-when="stone-installation-guelph" hidden>
+            <label for="stone">Stone type</label>
+            <select id="stone" name="stone_type">
+              <option>Not sure yet</option>
+              {stoneOptions.map((s) => <option>{s.name}</option>)}
+            </select>
+          </div>
+
+          <div class="field">
+            <label for="details">Anything we should know? <span class="field__opt">Optional</span></label>
+            <textarea id="details" name="details" rows="4" placeholder="e.g. Back yard is fenced, gate on the left side. Beds along the driveway need the most work."></textarea>
+          </div>
+
+          <div class="field">
+            <label for="photos">Photos of the yard <span class="field__opt">Optional, helps us quote faster</span></label>
+            <input id="photos" name="photos" type="file" accept="image/*" multiple class="visually-hidden" data-upload aria-describedby="photos-err" />
+            <label class="upload" for="photos" aria-hidden="true">
+              <Icon name="camera" />
+              <span data-upload-text>Add up to 5 photos</span>
+            </label>
+            <p class="field__err" id="photos-err" hidden>Choose up to 5 photos, under 7 MB in total.</p>
+          </div>
+
+          <div class="qnav">
+            <button type="button" class="btn btn--ghost" data-back><Icon name="arrow-left" />Back</button>
+            <button type="button" class="btn" data-next>Continue<span class="btn__icon"><Icon name="arrow-right" weight="bold" /></span></button>
+          </div>
+        </fieldset>
+
+        <!-- Step 3 -->
+        <fieldset class="qstep" data-step="3">
+          <legend class="qstep__title"><span class="visually-hidden">Step 3 of 3: </span>Where should we send your quote?</legend>
+          <p class="qstep__hint">Josh replies personally. No spam, no sales calls.</p>
+
+          <div class="field">
+            <label for="name">Your name</label>
+            <input id="name" name="name" type="text" autocomplete="name" required />
+            <p class="field__err" id="name-err" hidden>Enter your name.</p>
+          </div>
+          <div class="field-row field-row--2">
+            <div class="field">
+              <label for="email">Email</label>
+              <input id="email" name="email" type="email" autocomplete="email" required />
+              <p class="field__err" id="email-err" hidden>Enter a valid email, like name@example.com.</p>
+            </div>
+            <div class="field">
+              <label for="phone">Phone</label>
+              <input id="phone" name="phone" type="tel" autocomplete="tel" required pattern="[\d\s\+\(\)\.\-]{10,}" placeholder="519-555-0123" />
+              <p class="field__err" id="phone-err" hidden>Enter a 10-digit phone number.</p>
+            </div>
+          </div>
+          <div class="field">
+            <span class="field__label" id="contact-label">Best way to reach you</span>
+            <div class="seg" role="radiogroup" aria-labelledby="contact-label">
+              {['Call', 'Text', 'Email'].map((v, i) => (
+                <label class="seg__opt"><input type="radio" name="contact_method" value={v} checked={i === 0} /><span>{v}</span></label>
+              ))}
+            </div>
+          </div>
+          <label class="check">
+            <input type="checkbox" name="seasonal_reminders" value="yes" />
+            <span>Send me the occasional seasonal reminder, like when spring cleanup booking opens. You can unsubscribe anytime.</span>
+          </label>
+          <p class="qfine">We only use your details to prepare your quote and book your service. See our <a href="/privacy">privacy policy</a>.</p>
+
+          <p class="qerr" data-err-submit role="alert" hidden><Icon name="info" /><span>Your request did not go through. Try again, or call {site.phone} or email {site.email}.</span></p>
+          <div class="qnav">
+            <button type="button" class="btn btn--ghost" data-back><Icon name="arrow-left" />Back</button>
+            <button type="submit" class="btn" data-submit><span data-submit-text>Send my quote request</span><span class="btn__icon"><Icon name="paper-plane-tilt" weight="bold" /></span></button>
+          </div>
+        </fieldset>
+      </form>
+
+      <aside class="qside">
+        <div class="qsum" data-summary>
+          <p class="qsum__title">Your request</p>
+          <ul class="qsum__list" data-summary-list>
+            <li class="qsum__empty">No services chosen yet.</li>
+          </ul>
+          <p class="qsum__note"><Icon name="seal-check" />Free and no obligation</p>
+        </div>
+
+        <div class="qalt">
+          <p class="qalt__title">Prefer to talk?</p>
+          <a href={site.phoneHref} class="qalt__row"><Icon name="phone" /><span><strong>{site.phone}</strong><small>Call Josh directly</small></span></a>
+          <a href={`mailto:${site.email}`} class="qalt__row"><Icon name="envelope" /><span><strong>{site.email}</strong><small>Email anytime</small></span></a>
+          <div class="qalt__row"><Icon name="map-pin" /><span><strong>Guelph, Ontario</strong><small>And surrounding area</small></span></div>
+        </div>
+
+        <figure class="qrev">
+          <span class="stars" role="img" aria-label="5 out of 5 stars">{[1,2,3,4,5].map(() => <Icon name="star" weight="fill" />)}</span>
+          <blockquote>“{review.text}”</blockquote>
+          <figcaption>{review.name}, Guelph</figcaption>
+        </figure>
+      </aside>
+    </div>
+  </section>
+</Base>
+
+<style>
+  .quote-section { padding-top: clamp(2.5rem, 5vw, 4rem); }
+  .quote { display: grid; grid-template-columns: minmax(0, 1fr) 340px; gap: clamp(1.5rem, 4vw, 3.5rem); align-items: start; }
+
+  .qform { padding: clamp(1.25rem, 3.5vw, 2.5rem); border-radius: 26px; background: var(--white); border: 1px solid var(--line); box-shadow: var(--shadow-md); }
+  .qprog { list-style: none; display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.5rem; margin-bottom: 2rem; }
+  .qprog li { display: flex; align-items: center; gap: 0.6rem; padding-bottom: 0.75rem; border-bottom: 3px solid var(--mist-2); font-weight: 700; font-size: 0.95rem; color: var(--ink-soft); transition: border-color 300ms var(--ease-out), color 300ms ease; }
+  .qprog span { display: grid; place-items: center; width: 28px; height: 28px; border-radius: 50%; background: var(--mist); font-size: 0.85rem; flex: none; transition: background-color 300ms ease; }
+  .qprog li.is-current { color: var(--ink); border-color: var(--moss-600); }
+  .qprog li.is-current span { background: var(--moss-600); color: var(--lime-400); }
+  .qprog li.is-done { border-color: var(--lime-400); color: var(--ink); }
+  .qprog li.is-done span { background: var(--lime-400); }
+  @media (max-width: 560px) { .qprog li { font-size: 0.8rem; flex-direction: column; align-items: flex-start; gap: 0.35rem; } }
+
+  .qstep { border: 0; margin: 0; padding: 0; min-width: 0; }
+  :global(.js) .qstep:not(.is-current) { display: none; }
+  .qstep + .qstep { margin-top: 2.5rem; }
+  :global(.js) .qstep + .qstep { margin-top: 0; }
+  @media (prefers-reduced-motion: no-preference) { :global(.js) .qstep.is-current { animation: stepIn 240ms var(--ease-out); } }
+  @keyframes stepIn { from { opacity: 0; transform: translateX(var(--step-x, 12px)); } }
+  .qform[data-dir='back'] { --step-x: -12px; }
+  .qstep__title { padding: 0; font-family: var(--font-display); font-stretch: 85%; font-weight: 800; font-size: clamp(1.6rem, 3vw, 2.1rem); line-height: 1.1; margin-bottom: 0.3rem; }
+  .qstep__hint { color: var(--ink-soft); margin-bottom: 1.75rem; }
+
+  .qgroup + .qgroup { margin-top: 1.25rem; }
+  .qgroup__name { font-weight: 700; font-size: 0.9rem; color: var(--moss-500); margin-bottom: 0.5rem; }
+  .qopts { display: grid; grid-template-columns: repeat(auto-fill, minmax(230px, 1fr)); gap: 0.6rem; }
+  .qopt { position: relative; cursor: pointer; }
+  .qopt input { position: absolute; opacity: 0; inset: 0; pointer-events: none; }
+  .qopt__box { display: flex; align-items: center; gap: 0.75rem; height: 100%; padding: 0.8rem 0.9rem; border-radius: 14px; border: 1.5px solid var(--line-input); background: var(--white); transition: border-color 160ms ease, background-color 160ms ease, transform 160ms var(--ease-out); }
+  .qopt:active .qopt__box { transform: scale(0.98); }
+  @media (hover: hover) and (pointer: fine) { .qopt:hover .qopt__box { border-color: var(--moss-500); } }
+  .qopt input:focus-visible + .qopt__box { outline: 3px solid var(--moss-600); outline-offset: 2px; }
+  .qopt input:checked + .qopt__box { border-color: var(--moss-600); background: var(--lime-100); }
+  .qopt__icon { display: grid; place-items: center; width: 38px; height: 38px; flex: none; border-radius: 10px; background: var(--mist); color: var(--moss-600); }
+  .qopt input:checked + .qopt__box .qopt__icon { background: var(--lime-400); color: var(--moss-950); }
+  .qopt__icon :global(svg) { width: 20px; height: 20px; }
+  .qopt__text { display: grid; line-height: 1.25; flex: 1; }
+  .qopt__name { font-weight: 700; }
+  .qopt__meta { font-size: 0.85rem; color: var(--ink-soft); }
+  .qopt__check { display: grid; place-items: center; width: 24px; height: 24px; flex: none; border-radius: 50%; border: 1.5px solid var(--line-input); color: transparent; transition: background-color 160ms ease, border-color 160ms ease, color 160ms ease; }
+  .qopt__check :global(svg) { width: 13px; height: 13px; transform: scale(0.5); transition: transform 180ms var(--ease-out); }
+  .qopt input:checked + .qopt__box .qopt__check :global(svg) { transform: scale(1); }
+  .qopt input:checked + .qopt__box .qopt__check { background: var(--moss-600); border-color: var(--moss-600); color: var(--lime-400); }
+
+  .field { display: grid; gap: 0.45rem; margin-bottom: 1.4rem; }
+  .field[hidden] { display: none; }
+  .field label, .field__label { font-weight: 700; }
+  .field__opt { font-weight: 400; color: var(--ink-soft); font-size: 0.92rem; margin-left: 0.3rem; }
+  .field input[type='text'], .field input[type='email'], .field input[type='tel'], .field select, .field textarea {
+    width: 100%; min-height: 52px; padding: 0.75rem 0.95rem; border-radius: var(--r-input);
+    border: 1.5px solid var(--line-input); background: var(--paper); font-size: 1.05rem;
+    transition: border-color 160ms ease, box-shadow 160ms ease, background-color 160ms ease;
+  }
+  .field textarea { resize: vertical; min-height: 120px; }
+  .field input::placeholder, .field textarea::placeholder { color: #6b7865; }
+  .field input:focus, .field select:focus, .field textarea:focus { outline: 3px solid var(--moss-600); outline-offset: 2px; border-color: var(--moss-600); background: var(--white); box-shadow: 0 0 0 4px rgba(206, 235, 76, 0.55); }
+  .field.is-invalid input { border-color: #b3261e; }
+  .field__err { margin: 0; color: #a1231b; font-size: 0.92rem; font-weight: 600; }
+  .field-row--2 { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+  @media (max-width: 640px) { .field-row--2 { grid-template-columns: 1fr; gap: 0; } }
+
+  .seg { display: flex; flex-wrap: wrap; gap: 0.45rem; }
+  .seg__opt { position: relative; cursor: pointer; }
+  .seg__opt input { position: absolute; opacity: 0; inset: 0; pointer-events: none; }
+  .seg__opt span { display: inline-flex; align-items: center; min-height: 44px; padding: 0.5rem 1rem; border-radius: var(--r-pill); border: 1.5px solid var(--line-input); font-weight: 600; transition: background-color 160ms ease, border-color 160ms ease, color 160ms ease, transform 160ms var(--ease-out); }
+  .seg__opt:active span { transform: scale(0.97); }
+  @media (hover: hover) and (pointer: fine) { .seg__opt:hover span { border-color: var(--moss-500); } }
+  .seg__opt input:checked + span { background: var(--moss-600); border-color: var(--moss-600); color: var(--white); }
+  .seg__opt input:focus-visible + span { outline: 3px solid var(--moss-600); outline-offset: 2px; }
+
+  .swpick { display: flex; flex-wrap: wrap; gap: 0.6rem; }
+  .swpick__opt { position: relative; display: grid; justify-items: center; gap: 0.35rem; width: 84px; font-size: 0.85rem; font-weight: 600; text-align: center; cursor: pointer; }
+  .swpick__opt input { position: absolute; opacity: 0; pointer-events: none; }
+  .swpick__chip { display: grid; place-items: center; width: 64px; height: 64px; border-radius: 16px; background: linear-gradient(145deg, var(--a), var(--c)); box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.1); transition: box-shadow 160ms ease, transform 160ms var(--ease-out); }
+  .swpick__chip--unsure { background: var(--mist); font-weight: 800; font-size: 1.4rem; color: var(--ink-soft); }
+  .swpick__opt input:checked + .swpick__chip { box-shadow: 0 0 0 3px var(--white), 0 0 0 5px var(--moss-600); }
+  .swpick__opt input:focus-visible + .swpick__chip { outline: 3px solid var(--moss-600); outline-offset: 5px; }
+
+  .upload { display: flex !important; align-items: center; justify-content: center; gap: 0.6rem; min-height: 88px; border-radius: 16px; border: 2px dashed var(--line-input); background: var(--paper); font-weight: 700 !important; cursor: pointer; transition: border-color 160ms ease, background-color 160ms ease; }
+  .upload :global(svg) { width: 24px; height: 24px; color: var(--moss-600); }
+  @media (hover: hover) and (pointer: fine) { .upload:hover { border-color: var(--moss-600); background: var(--lime-100); } }
+  .upload.has-files { border-style: solid; border-color: var(--moss-600); background: var(--lime-100); }
+  input[data-upload]:focus-visible + .upload { outline: 3px solid var(--moss-600); outline-offset: 2px; }
+
+  .check { display: flex; gap: 0.75rem; align-items: flex-start; margin: 0.5rem 0 1rem; cursor: pointer; }
+  .check input { width: 22px; height: 22px; margin-top: 0.15rem; accent-color: var(--moss-600); flex: none; }
+  .qfine { font-size: 0.92rem; color: var(--ink-soft); }
+  .qfine a { color: var(--moss-600); }
+
+  .qerr { display: flex; gap: 0.6rem; align-items: flex-start; margin: 1rem 0 0; padding: 0.85rem 1rem; border-radius: 12px; background: #fdecea; color: #8c1d16; font-weight: 600; }
+  .qerr[hidden] { display: none; }
+  .qerr :global(svg) { flex: none; width: 20px; height: 20px; margin-top: 0.1rem; }
+  .qnav { display: flex; justify-content: space-between; align-items: center; gap: 1rem; margin-top: 2rem; padding-top: 1.5rem; border-top: 1px solid var(--line); }
+  .qnav .btn--ghost { padding-left: 1rem; }
+  .qnav button[aria-disabled='true'] { opacity: 0.6; cursor: progress; }
+  .no-js-hide { display: none; }
+  @media (max-width: 480px) { .qnav .btn:not(.btn--ghost) { flex: 1; justify-content: space-between; } }
+
+  .qside { position: sticky; top: calc(var(--header-h) + 20px); display: grid; gap: 1rem; }
+  .qsum { padding: 1.5rem; border-radius: 22px; background: var(--moss-600); color: var(--lime-100); }
+  .qsum__title { margin: 0 0 0.9rem; font-family: var(--font-display); font-stretch: 90%; font-weight: 800; font-size: 1.3rem; color: var(--white); }
+  .qsum__list { list-style: none; display: grid; gap: 0.45rem; margin-bottom: 1rem; }
+  .qsum__list li { display: flex; justify-content: space-between; gap: 0.75rem; padding: 0.55rem 0.8rem; border-radius: 10px; background: rgba(21, 30, 18, 0.35); font-weight: 600; font-size: 0.95rem; }
+  .qsum__list li small { color: var(--lime-400); white-space: nowrap; font-weight: 700; }
+  .qsum__list .qsum__empty { background: transparent; padding: 0; color: rgba(244, 250, 217, 0.72); font-weight: 400; }
+  .qsum__note { display: flex; align-items: center; gap: 0.5rem; margin: 0; font-size: 0.92rem; }
+  .qsum__note :global(svg) { width: 18px; height: 18px; color: var(--lime-400); }
+  @media (prefers-reduced-motion: no-preference) { .qsum__list :global(li[data-new]) { animation: sumIn 200ms var(--ease-out); } }
+  @keyframes sumIn { from { opacity: 0; transform: translateY(-4px); } }
+
+  .qalt { padding: 1.4rem; border-radius: 22px; background: var(--white); border: 1px solid var(--line); display: grid; gap: 0.3rem; }
+  .qalt__title { margin: 0 0 0.5rem; font-weight: 800; font-family: var(--font-display); font-stretch: 92%; font-size: 1.15rem; }
+  .qalt__row { display: flex; align-items: center; gap: 0.8rem; padding: 0.55rem; margin-inline: -0.55rem; border-radius: 12px; text-decoration: none; }
+  a.qalt__row:hover { background: var(--mist); }
+  .qalt__row :global(svg) { width: 22px; height: 22px; color: var(--moss-600); flex: none; }
+  .qalt__row strong { display: block; font-size: 0.98rem; word-break: break-all; }
+  .qalt__row small { color: var(--ink-soft); }
+  .qrev { margin: 0; padding: 1.4rem; border-radius: 22px; background: var(--lime-200); }
+  .qrev blockquote { margin: 0.5rem 0; font-weight: 600; }
+  .qrev figcaption { font-size: 0.92rem; color: var(--ink-soft); }
+
+  @media (max-width: 1023px) {
+    .quote { grid-template-columns: 1fr; }
+    .qside { position: static; }
+    .qsum { display: none; }
+  }
+</style>
+
+<script>
+  const form = document.querySelector<HTMLFormElement>('[data-quote]')!;
+  const steps = [...form.querySelectorAll<HTMLFieldSetElement>('[data-step]')];
+  const prog = [...form.querySelectorAll<HTMLElement>('[data-prog]')];
+  const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  let current = 0;
+
+  const go = (i: number) => {
+    form.dataset.dir = i > current ? 'fwd' : 'back';
+    current = i;
+    steps.forEach((s, j) => s.classList.toggle('is-current', j === i));
+    prog.forEach((p, j) => {
+      p.classList.toggle('is-current', j === i);
+      p.classList.toggle('is-done', j < i);
+      if (j === i) p.setAttribute('aria-current', 'step'); else p.removeAttribute('aria-current');
+    });
+    const top = form.getBoundingClientRect().top + window.scrollY - 110;
+    if (window.scrollY > top) window.scrollTo({ top, behavior: reduce ? 'auto' : 'smooth' });
+    const title = steps[i].querySelector<HTMLElement>('.qstep__title');
+    title?.setAttribute('tabindex', '-1');
+    title?.focus({ preventScroll: true });
+  };
+
+  const setFieldError = (input: HTMLInputElement, bad: boolean) => {
+    const field = input.closest<HTMLElement>('.field')!;
+    const err = field.querySelector<HTMLElement>('.field__err')!;
+    field.classList.toggle('is-invalid', bad);
+    err.hidden = !bad;
+    input.setAttribute('aria-invalid', String(bad));
+    if (bad) input.setAttribute('aria-describedby', err.id); else input.removeAttribute('aria-describedby');
+  };
+
+  // Inline validation for one step. Returns true when valid.
+  const validate = (i: number, focus = true) => {
+    const step = steps[i];
+    if (i === 0) {
+      const any = step.querySelectorAll('input[name="services"]:checked').length > 0;
+      step.querySelector<HTMLElement>('[data-err-services]')!.hidden = any;
+      if (!any && focus) step.querySelector<HTMLInputElement>('input[name="services"]')?.focus();
+      return any;
+    }
+    let firstBad: HTMLInputElement | null = null;
+    step.querySelectorAll<HTMLInputElement>('input[required]').forEach((input) => {
+      const ok = input.value.trim() !== '' && input.checkValidity();
+      setFieldError(input, !ok);
+      if (!ok && !firstBad) firstBad = input;
+    });
+    if (focus) (firstBad as HTMLInputElement | null)?.focus();
+    return !firstBad && (i !== 1 || photosOk());
+  };
+
+  form.querySelectorAll('[data-next]').forEach((b) => b.addEventListener('click', () => { if (validate(current)) go(current + 1); }));
+  form.querySelectorAll('[data-back]').forEach((b) => b.addEventListener('click', () => go(current - 1)));
+  form.querySelectorAll<HTMLInputElement>('input[required]').forEach((input) =>
+    input.addEventListener('input', () => {
+      if (input.closest('.field')!.classList.contains('is-invalid') && input.value.trim() && input.checkValidity()) setFieldError(input, false);
+    })
+  );
+
+  // Live summary, hidden services list and conditional fields
+  const boxes = [...form.querySelectorAll<HTMLInputElement>('input[name="services"]')];
+  const list = document.querySelector<HTMLElement>('[data-summary-list]')!;
+  const hiddenList = form.querySelector<HTMLInputElement>('[data-services-list]')!;
+  const sync = (changed?: HTMLInputElement) => {
+    const chosen = boxes.filter((b) => b.checked);
+    hiddenList.value = chosen.map((b) => b.value).join(', ');
+    list.innerHTML = chosen.length
+      ? chosen.map((b) => {
+          const meta = b.closest('.qopt')!.querySelector('.qopt__meta')!.textContent ?? '';
+          return `<li${b === changed ? ' data-new' : ''}><span>${b.value}</span><small>${meta.startsWith('From') ? meta.split(' per')[0] : ''}</small></li>`;
+        }).join('')
+      : '<li class="qsum__empty">No services chosen yet.</li>';
+    form.querySelectorAll<HTMLElement>('[data-when]').forEach((f) => {
+      f.hidden = !chosen.some((b) => b.dataset.slug === f.dataset.when);
+    });
+    if (chosen.length) form.querySelector<HTMLElement>('[data-err-services]')!.hidden = true;
+  };
+  boxes.forEach((b) => b.addEventListener('change', () => sync(b)));
+
+  // Pre-select from ?service=slug (links from service pages and the quote band)
+  const pre = new URLSearchParams(location.search).getAll('service');
+  boxes.forEach((b) => { if (b.dataset.slug && pre.includes(b.dataset.slug)) b.checked = true; });
+  sync();
+
+  // Photos: max 5 files, about 7 MB total (Netlify's limit is 8 MB per submission)
+  const upload = form.querySelector<HTMLInputElement>('[data-upload]')!;
+  const photosErr = form.querySelector<HTMLElement>('#photos-err')!;
+  const photosOk = () => {
+    const files = [...(upload.files ?? [])];
+    const total = files.reduce((n, f) => n + f.size, 0);
+    const ok = files.length <= 5 && total <= 7 * 1024 * 1024;
+    photosErr.hidden = ok;
+    return ok;
+  };
+  upload.addEventListener('change', () => {
+    if (!photosOk()) upload.value = '';
+    const files = [...(upload.files ?? [])];
+    form.querySelector<HTMLElement>('.upload')!.classList.toggle('has-files', files.length > 0);
+    form.querySelector<HTMLElement>('[data-upload-text]')!.textContent = files.length ? `${files.length} photo${files.length > 1 ? 's' : ''} added` : 'Add up to 5 photos';
+  });
+
+  // Submit. PUBLIC_FORM_ENDPOINT (e.g. a Formspree URL) works on any host; without it Netlify Forms handles the POST.
+  const btn = form.querySelector<HTMLButtonElement>('[data-submit]')!;
+  const btnText = form.querySelector<HTMLElement>('[data-submit-text]')!;
+  let sending = false;
+  form.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    // Enter inside an earlier step moves forward instead of sending a half-filled request
+    if (current < steps.length - 1) { if (validate(current)) go(current + 1); return; }
+    for (let i = 0; i < steps.length; i++) {
+      if (!validate(i, false)) { if (i !== current) go(i); validate(i); return; }
+    }
+    if (sending) return;
+    const err = form.querySelector<HTMLElement>('[data-err-submit]')!;
+    err.hidden = true;
+    sending = true;
+    btn.setAttribute('aria-disabled', 'true');
+    btnText.textContent = 'Sending…';
+    const endpoint = import.meta.env.PUBLIC_FORM_ENDPOINT as string | undefined;
+    if (import.meta.env.DEV && !endpoint) { location.href = '/thank-you'; return; }
+    try {
+      const res = await fetch(endpoint || '/', { method: 'POST', body: new FormData(form), headers: { Accept: 'application/json' } });
+      if (!res.ok) throw new Error(String(res.status));
+      location.href = '/thank-you';
+    } catch {
+      err.hidden = false;
+      sending = false;
+      btn.removeAttribute('aria-disabled');
+      btnText.textContent = 'Send my quote request';
+    }
+  });
+</script>

@@ -1,0 +1,107 @@
+---
+import Base from '../layouts/Base.astro';
+import PageHero from '../components/PageHero.astro';
+import Icon from '../components/Icon.astro';
+import CtaBand from '../components/CtaBand.astro';
+import { servicesIn, groupLabels, seasonInfo, type ServiceGroup } from '../data/services';
+import { src, srcset } from '../data/photos';
+
+const groups = Object.keys(groupLabels) as ServiceGroup[];
+const groupIcons: Record<ServiceGroup, string> = { lawn: 'rows', cleanups: 'leaf', beds: 'circles-three', trees: 'tree' };
+---
+<Base
+  title="Lawn Care & Landscaping Services in Guelph | Leaf It Alone"
+  description="All Leaf It Alone services in Guelph: lawn mowing, spring and fall cleanups, sod, mulch, stone gardens, rototilling, seeding, and tree, shrub and hedge trimming."
+>
+  <PageHero
+    title="Services for every season"
+    lede="Eleven services. Pick one, or pick a few and we will do them on the same visit."
+    crumbs={[{ label: 'Services' }]}
+  >
+    <ul class="jump">
+      {groups.map((g) => <li><a href={`#${g}`} class="jump__link">{groupLabels[g].name}</a></li>)}
+    </ul>
+  </PageHero>
+
+  {groups.map((g, gi) => (
+    <section id={g} class:list={['section', 'group', { 'section--mist': gi % 2 === 1 }]}>
+      <div class="wrap">
+        <div class="group__head">
+          <span class="group__icon"><Icon name={groupIcons[g]} /></span>
+          <div>
+            <h2>{groupLabels[g].name}</h2>
+            <p class="lede">{groupLabels[g].blurb}</p>
+          </div>
+        </div>
+        <ul class="cards">
+          {servicesIn(g).map((s, i) => (
+            <li data-reveal style={`--i:${i}`}>
+              <a href={`/${s.slug}`} class="scard">
+                <div class="photo scard__photo">
+                  <img src={src(s.photos[0], 560, 380)} srcset={srcset(s.photos[0], 560, 380)} sizes="(max-width: 700px) 92vw, 380px" alt="" loading="lazy" width="560" height="380" />
+                  {s.price && <span class="scard__price">From {s.price.from}</span>}
+                </div>
+                <div class="scard__body">
+                  <h3>{s.name}</h3>
+                  <p>{s.card}</p>
+                  <p class="scard__season"><Icon name="calendar" />{s.seasons.map((x) => seasonInfo[x].name).join(', ')}</p>
+                  <span class="text-link">View details <Icon name="arrow-right" /></span>
+                </div>
+              </a>
+            </li>
+          ))}
+        </ul>
+      </div>
+    </section>
+  ))}
+
+  <section class="section section--tight">
+    <div class="wrap unsure">
+      <div>
+        <h2>Not sure what your yard needs?</h2>
+        <p class="lede">Describe the problem in your own words, like “beds are overgrown” or “lawn is patchy”, and Josh will suggest what to do and what it costs.</p>
+      </div>
+      <a href="/contact" class="btn btn--moss">Get a free quote<span class="btn__icon"><Icon name="arrow-right" weight="bold" /></span></a>
+    </div>
+  </section>
+
+  <CtaBand />
+</Base>
+
+<style>
+  .jump { list-style: none; display: flex; flex-wrap: wrap; gap: 0.5rem; margin-top: 2rem; }
+  .jump__link {
+    display: inline-flex; align-items: center; gap: 0.5rem; padding: 0.6rem 1rem; border-radius: var(--r-pill);
+    background: rgba(244, 250, 217, 0.1); border: 1px solid rgba(244, 250, 217, 0.22); color: var(--lime-100);
+    font-weight: 700; text-decoration: none; transition: background-color 160ms ease, border-color 160ms ease;
+  }
+  .jump__link :global(svg) { width: 18px; height: 18px; color: var(--lime-400); }
+  .jump__link:hover { background: rgba(206, 235, 76, 0.16); border-color: var(--lime-400); }
+
+  .group__head { display: flex; gap: 1.25rem; align-items: flex-start; margin-bottom: 2rem; }
+  .group__head h2 { margin-bottom: 0.2em; }
+  .group__head .lede { margin: 0; }
+  .group__icon { display: grid; place-items: center; flex: none; width: 56px; height: 56px; border-radius: 16px; background: var(--moss-600); color: var(--lime-400); }
+  .group__icon :global(svg) { width: 28px; height: 28px; }
+
+  .cards { list-style: none; display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.25rem; }
+  .scard { display: flex; flex-direction: column; height: 100%; border-radius: 22px; overflow: hidden; background: var(--white); border: 1px solid var(--line); text-decoration: none; transition: transform 250ms var(--ease-out), box-shadow 250ms ease; }
+  @media (hover: hover) and (pointer: fine) {
+    .scard:hover { box-shadow: var(--shadow-md); }
+    .scard:hover img { transform: scale(1.03); }
+  }
+  .scard__photo { position: relative; border-radius: 0; aspect-ratio: 56 / 38; }
+  .scard__photo img { transition: transform 400ms var(--ease-out); }
+  .scard__price { position: absolute; left: 1rem; bottom: 1rem; padding: 0.3rem 0.75rem; border-radius: var(--r-pill); background: var(--lime-400); color: var(--moss-950); font-weight: 700; font-size: 0.9rem; }
+  .scard__body { padding: 1.4rem 1.5rem 1.5rem; display: flex; flex-direction: column; flex: 1; }
+  .scard__body p { color: var(--ink-soft); margin-bottom: 0.75rem; }
+  .scard__season { display: flex; align-items: center; gap: 0.4rem; font-size: 0.9rem; }
+  .scard__season :global(svg) { width: 16px; height: 16px; color: var(--moss-500); }
+  .scard .text-link { margin-top: auto; }
+  @media (max-width: 1023px) { .cards { grid-template-columns: 1fr 1fr; } }
+  @media (max-width: 640px) { .cards { grid-template-columns: 1fr; } }
+
+  .unsure { display: flex; justify-content: space-between; align-items: center; gap: 2rem; flex-wrap: wrap; padding: clamp(1.75rem, 4vw, 3rem); border-radius: 28px; background: var(--lime-200); }
+  .unsure h2 { margin-bottom: 0.3em; }
+  .unsure .lede { margin: 0; color: var(--moss-800); }
+</style>

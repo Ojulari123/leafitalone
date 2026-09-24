@@ -1,0 +1,114 @@
+---
+import Base from '../layouts/Base.astro';
+import PageHero from '../components/PageHero.astro';
+import Icon from '../components/Icon.astro';
+import CtaBand from '../components/CtaBand.astro';
+import { site } from '../data/site';
+import { services } from '../data/services';
+import { src, srcset } from '../data/photos';
+
+const promises = [
+  { icon: 'calendar-check', t: 'We show up when we say', d: 'You get a day, and we keep it. If rain or heat changes the plan, you hear from us before you have to ask.' },
+  { icon: 'ruler', t: 'Details are the job', d: 'Straight mowing lines, clean bed edges, trimmed corners and clippings blown off the driveway. Every visit.' },
+  { icon: 'wrench', t: 'Proper equipment', d: 'Commercial-grade mowers, trimmers and blowers, plus a sod cutter and rototiller for bigger lawn and bed projects.' },
+  { icon: 'house', t: 'Your home, respected', d: 'Gates closed, pets considered, and the property left cleaner than we found it.' },
+];
+---
+<Base
+  title="About Leaf It Alone | Locally Owned Guelph Lawn Care"
+  description="Leaf It Alone is a locally owned lawn care and landscaping business in Guelph run by Josh. Mowing, cleanups, sod, mulch and stone, with free quotes."
+  image="db3d51_083fce0f7b174aefbec05c059e6654a9"
+>
+  <PageHero
+    title="Run by Josh, based in Guelph"
+    lede="Leaf It Alone is a locally owned Guelph business run by Josh. The idea is in the name: leave the yard work to us."
+    crumbs={[{ label: 'About' }]}
+  />
+
+  <section class="section">
+    <div class="wrap story">
+      <div class="story__media" data-reveal>
+        <div class="frame">
+          <div class="photo story__photo">
+            <!-- TODO: replace with a photo of Josh on a job or with the truck -->
+            <img src={src('db3d51_083fce0f7b174aefbec05c059e6654a9', 700, 800)} srcset={srcset('db3d51_083fce0f7b174aefbec05c059e6654a9', 700, 800)} sizes="(max-width: 860px) 92vw, 480px" alt="Front of a brick house with shrubs in fresh black mulch beds, maintained by Leaf It Alone" loading="lazy" width="700" height="800" />
+          </div>
+        </div>
+      </div>
+      <div class="story__copy">
+        <h2>Why Josh started Leaf It Alone</h2>
+        <p class="lede">You deal with Josh directly, from the quote to the cleanup.</p>
+        <p>Josh started Leaf It Alone to give Guelph homeowners a lawn and garden crew that shows up when it says it will and gives a straight price.</p>
+        <p>We keep things simple. You tell us what your yard needs, we send a clear quote, and we do the work properly. Some customers call us once for a spring cleanup. Others have us mowing every week from spring to fall.</p>
+        <ul class="facts">
+          <li><strong>{site.rating.score}</strong><span>Google rating</span></li>
+          <li><strong>{site.rating.count}</strong><span>Google reviews</span></li>
+          <li><strong>{services.length}</strong><span>Services offered</span></li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <section class="section section--mist">
+    <div class="wrap">
+      <div class="section-head">
+        <h2>What you can count on</h2>
+      </div>
+      <ul class="promises">
+        {promises.map((p, i) => (
+          <li>
+            <span class="promises__icon"><Icon name={p.icon} /></span>
+            <h3>{p.t}</h3>
+            <p>{p.d}</p>
+          </li>
+        ))}
+      </ul>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="wrap owner">
+      <div class="owner__card">
+        <Icon name="quotes" weight="fill" class="owner__q" />
+        <p class="owner__text">When you hire Leaf It Alone, you are dealing with me directly. If something is not right, tell me and I will make it right.</p>
+        <p class="owner__name">Josh, owner</p>
+        <div class="btn-row">
+          <a href={site.phoneHref} class="btn btn--moss">Call {site.phone}<span class="btn__icon"><Icon name="phone" weight="bold" /></span></a>
+          <a href={`mailto:${site.email}`} class="btn btn--ghost"><Icon name="envelope" />{site.email}</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <CtaBand />
+</Base>
+
+<style>
+  .story { display: grid; grid-template-columns: 0.85fr 1.15fr; gap: clamp(2rem, 6vw, 5rem); align-items: center; }
+  .story__photo { aspect-ratio: 7 / 8; }
+  .story__copy p:not(.lede) { max-width: 60ch; }
+  .facts { list-style: none; display: flex; gap: 2.5rem; margin-top: 2rem; padding-top: 1.5rem; border-top: 1px solid var(--line); }
+  .facts strong { display: block; font-family: var(--font-display); font-stretch: 78%; font-weight: 800; font-size: 2.6rem; line-height: 1; color: var(--moss-600); }
+  .facts span { font-size: 0.92rem; color: var(--ink-soft); }
+  @media (max-width: 860px) { .story { grid-template-columns: 1fr; } .story__media { max-width: 480px; } }
+
+  .promises { list-style: none; display: grid; grid-template-columns: repeat(4, 1fr); gap: 1rem; }
+  .promises li { padding: 1.75rem; border-radius: 22px; background: var(--white); border: 1px solid var(--line); }
+  .promises li:nth-child(2) { background: var(--lime-200); border-color: transparent; }
+  .promises li:nth-child(3) { background: var(--moss-600); color: var(--lime-100); border-color: transparent; }
+  .promises li:nth-child(3) h3 { color: var(--white); }
+  .promises li:nth-child(3) p { color: rgba(244, 250, 217, 0.82); }
+  .promises li:nth-child(3) .promises__icon { background: var(--lime-400); }
+  .promises__icon { display: grid; place-items: center; width: 48px; height: 48px; margin-bottom: 1.25rem; border-radius: 14px; background: var(--mist); color: var(--moss-700); }
+  .promises li:nth-child(2) .promises__icon { background: var(--white); }
+  .promises__icon :global(svg) { width: 24px; height: 24px; }
+  .promises p { margin: 0; color: var(--ink-soft); }
+  @media (max-width: 1023px) { .promises { grid-template-columns: 1fr 1fr; } }
+  @media (max-width: 560px) { .promises { grid-template-columns: 1fr; } }
+
+  .owner__card { position: relative; max-width: 820px; margin-inline: auto; text-align: center; padding: clamp(2rem, 5vw, 3.5rem); border-radius: 28px; background: var(--white); border: 1px solid var(--line); box-shadow: var(--shadow-md); }
+  .owner__card :global(.owner__q) { width: 44px; height: 44px; margin: 0 auto 1rem; color: var(--lime-400); }
+  .owner__text { font-family: var(--font-display); font-stretch: 88%; font-weight: 750; font-size: clamp(1.5rem, 3vw, 2.2rem); line-height: 1.2; margin-bottom: 1rem; text-wrap: balance; }
+  .owner__name { font-weight: 700; color: var(--moss-600); margin-bottom: 1.75rem; }
+  .owner__card .btn-row { justify-content: center; }
+</style>

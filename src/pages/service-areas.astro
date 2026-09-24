@@ -1,0 +1,83 @@
+---
+import Base from '../layouts/Base.astro';
+import PageHero from '../components/PageHero.astro';
+import Icon from '../components/Icon.astro';
+import CtaBand from '../components/CtaBand.astro';
+import { neighbourhoods, nearby } from '../data/areas';
+import { services } from '../data/services';
+---
+<Base
+  title="Service Areas | Lawn Care & Landscaping Across Guelph | Leaf It Alone"
+  description="Leaf It Alone serves every Guelph neighbourhood, from Downtown and the Ward to Kortright Hills and Westminster Woods, plus nearby communities. Free quotes."
+>
+  <PageHero
+    title="Lawn care in every Guelph neighbourhood"
+    highlight="Guelph"
+    lede="We are based in Guelph and work across the whole city. Just outside town? Ask, we often can."
+    crumbs={[{ label: 'Service areas' }]}
+  />
+
+  <section class="section">
+    <div class="wrap areas">
+      <div class="areas__map" data-reveal>
+        <iframe
+          title="Map of Guelph, Ontario"
+          src="https://www.google.com/maps?q=Guelph,+Ontario&z=12&output=embed"
+          loading="lazy"
+          referrerpolicy="no-referrer-when-downgrade"
+        ></iframe>
+      </div>
+      <div class="areas__lists">
+        <h2>Guelph neighbourhoods</h2>
+        <ul class="areas__list">
+          {neighbourhoods.map((n) => <li>{n}</li>)}
+        </ul>
+        <h3 class="areas__sub">Nearby communities</h3>
+        <p class="muted">Call or send a quote request to confirm we can reach you.</p>
+        <ul class="areas__list areas__list--nearby">
+          {nearby.map((n) => <li>{n}</li>)}
+        </ul>
+        <div class="areas__check">
+          <Icon name="info" />
+          <p>Not on the list? Send your address with your quote request and we will tell you right away if we can help.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section section--mist section--tight">
+    <div class="wrap">
+      <h2 class="all__title">Services available across Guelph</h2>
+      <ul class="all">
+        {services.map((s) => (
+          <li><a href={`/${s.slug}`} class="all__link"><Icon name={s.icon} />{s.name}<Icon name="arrow-right" class="all__arrow" /></a></li>
+        ))}
+      </ul>
+    </div>
+  </section>
+
+  <CtaBand />
+</Base>
+
+<style>
+  .areas { display: grid; grid-template-columns: 1.1fr 0.9fr; gap: clamp(2rem, 5vw, 4rem); align-items: start; }
+  .areas__map { position: sticky; top: calc(var(--header-h) + 20px); border-radius: 24px; overflow: hidden; border: 1px solid var(--line); box-shadow: var(--shadow-md); background: var(--mist); }
+  .areas__map iframe { display: block; width: 100%; height: min(600px, 70vh); border: 0; }
+  .areas__list { list-style: none; columns: 2; column-gap: 2rem; }
+  .areas__list li { break-inside: avoid; padding: 0.55rem 0; border-bottom: 1px solid var(--line-strong); font-weight: 600; }
+  .areas__list--nearby li { font-weight: 400; color: var(--ink-soft); }
+  .areas__sub { margin-top: 2.5rem; margin-bottom: 0.3rem; }
+  .areas__check { display: flex; gap: 0.8rem; margin-top: 2rem; padding: 1.1rem 1.25rem; border-radius: 16px; background: var(--lime-100); border: 1px solid rgba(63, 90, 54, 0.14); }
+  .areas__check :global(svg) { flex: none; width: 24px; height: 24px; color: var(--moss-600); }
+  .areas__check p { margin: 0; }
+  @media (max-width: 900px) { .areas { grid-template-columns: 1fr; } .areas__map { position: static; } .areas__map iframe { height: 360px; } }
+
+  .all__title { margin-bottom: 1.5rem; }
+  .all { list-style: none; display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.6rem; }
+  .all__link { display: flex; align-items: center; gap: 0.7rem; padding: 1rem 1.1rem; border-radius: 14px; background: var(--white); border: 1px solid var(--line); font-weight: 700; text-decoration: none; transition: border-color 180ms ease, transform 180ms var(--ease-out); }
+  .all__link :global(svg) { width: 20px; height: 20px; color: var(--moss-600); flex: none; }
+  .all__link :global(.all__arrow) { margin-left: auto; width: 16px; height: 16px; transition: transform 200ms var(--ease-out); }
+  @media (hover: hover) and (pointer: fine) { .all__link:hover { border-color: var(--moss-600); } .all__link:hover :global(.all__arrow) { transform: translateX(3px); } }
+  @media (max-width: 860px) { .all { grid-template-columns: 1fr 1fr; } }
+  @media (max-width: 520px) { .all { grid-template-columns: 1fr; } }
+</style>

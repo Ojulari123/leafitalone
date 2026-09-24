@@ -1,0 +1,52 @@
+---
+import { getCollection } from 'astro:content';
+import Base from '../../layouts/Base.astro';
+import PageHero from '../../components/PageHero.astro';
+import Icon from '../../components/Icon.astro';
+import CtaBand from '../../components/CtaBand.astro';
+import { src, srcset } from '../../data/photos';
+
+const posts = (await getCollection('blog')).sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf() || a.data.title.localeCompare(b.data.title));
+const [first, ...rest] = posts;
+---
+<Base title="Lawn Care & Landscaping Tips | Leaf It Alone Blog, Guelph" description="Practical lawn, garden and landscaping advice for Guelph homeowners: sod care, overseeding, fall landscaping, levelling a lawn and more.">
+  <PageHero title="Yard tips from a Guelph crew" lede="Practical advice on lawns, sod, beds and seasonal care, written for Guelph yards and weather." crumbs={[{ label: 'Blog' }]} />
+  <section class="section">
+    <div class="wrap">
+      <a href={`/post/${first.id}`} class="feat" data-reveal>
+        <div class="photo feat__photo"><img src={src(first.data.photo, 900, 620)} srcset={srcset(first.data.photo, 900, 620)} sizes="(max-width: 860px) 92vw, 640px" alt="" width="900" height="620" /></div>
+        <div class="feat__body">
+          <p class="meta">{first.data.readMinutes} min read</p>
+          <h2>{first.data.title}</h2>
+          <p class="muted">{first.data.description}</p>
+          <span class="text-link">Read the guide <Icon name="arrow-right" /></span>
+        </div>
+      </a>
+      <ul class="posts">
+        {rest.map((p, i) => (
+          <li data-reveal style={`--i:${i}`}>
+            <a href={`/post/${p.id}`} class="post">
+              <div class="photo post__photo"><img src={src(p.data.photo, 560, 360)} alt="" loading="lazy" width="560" height="360" /></div>
+              <p class="meta">{p.data.readMinutes} min read</p>
+              <h3>{p.data.title}</h3>
+              <p class="muted">{p.data.description}</p>
+            </a>
+          </li>
+        ))}
+      </ul>
+    </div>
+  </section>
+  <CtaBand />
+</Base>
+<style>
+  .feat { display: grid; grid-template-columns: 1.15fr 0.85fr; gap: clamp(1.5rem, 4vw, 3rem); align-items: center; text-decoration: none; margin-bottom: clamp(3rem, 6vw, 4rem); }
+  .feat__photo { aspect-ratio: 90 / 62; }
+  .feat__photo img, .post__photo img { transition: transform 600ms var(--ease-out); }
+  @media (hover: hover) and (pointer: fine) { .feat:hover img, .post:hover img { transform: scale(1.03); } .post:hover h3 { text-decoration: underline; text-decoration-color: var(--lime-400); text-decoration-thickness: 3px; text-underline-offset: 4px; } }
+  .feat h2 { font-size: clamp(1.8rem, 3.4vw, 2.6rem); }
+  .meta { font-weight: 700; font-size: 0.88rem; color: var(--moss-500); margin: 0 0 0.5rem; }
+  .posts { list-style: none; display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.5rem; }
+  .post { display: block; text-decoration: none; }
+  .post__photo { aspect-ratio: 56 / 36; margin-bottom: 1rem; }
+  @media (max-width: 860px) { .feat, .posts { grid-template-columns: 1fr; } }
+</style>

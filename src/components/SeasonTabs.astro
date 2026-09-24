@@ -1,0 +1,129 @@
+---
+import Icon from './Icon.astro';
+import { services, seasonInfo, type Season } from '../data/services';
+
+type Key = Season | 'winter';
+const keys: Key[] = ['spring', 'summer', 'fall', 'winter'];
+const monthToSeason = (m: number): Key => (m >= 3 && m <= 4 ? 'spring' : m >= 5 && m <= 7 ? 'summer' : m >= 8 && m <= 10 ? 'fall' : 'winter');
+const initial = monthToSeason(new Date().getMonth());
+const bySeason = (k: Key) => (k === 'winter' ? services.filter((s) => s.slug === 'spring-cleanup-guelph' || s.slug === 'sod-installation-guelph' || s.slug === 'stone-installation-guelph') : services.filter((s) => s.seasons.includes(k)));
+---
+<section class="section season" data-season>
+  <div class="wrap">
+    <div class="season__head">
+      <div>
+        <span class="eyebrow">Guelph yard calendar</span>
+        <h2>What your yard needs right now</h2>
+      </div>
+      <div class="season__tabs" role="tablist" aria-label="Seasons">
+        {keys.map((k) => (
+          <button role="tab" id={`tab-${k}`} aria-controls={`panel-${k}`} aria-selected={k === initial ? 'true' : 'false'} tabindex={k === initial ? 0 : -1} data-tab={k}>
+            {seasonInfo[k].name}
+          </button>
+        ))}
+      </div>
+    </div>
+
+    {keys.map((k) => (
+      <div role="tabpanel" id={`panel-${k}`} aria-labelledby={`tab-${k}`} class="season__panel" hidden={k !== initial} data-panel={k}>
+        <div class="season__intro">
+          <p class="season__months">{seasonInfo[k].months}</p>
+          <p class="season__line">{seasonInfo[k].line}</p>
+          {k === 'winter'
+            ? <p class="muted">Spring spots go fast. Send your request over the winter and you will be first on the list when the snow melts.</p>
+            : <p class="muted">These are booking now.</p>}
+          <a href="/contact" class="text-link">Get a free quote <Icon name="arrow-right" /></a>
+        </div>
+        <ul class="season__grid">
+          {bySeason(k).map((s) => (
+            <li>
+              <a href={`/${s.slug}`} class="season__card">
+                <span class="season__name">{s.name}</span>
+                <span class="season__desc">{s.card}</span>
+                {s.price && <span class="season__price">From {s.price.from}</span>}
+              </a>
+            </li>
+          ))}
+        </ul>
+      </div>
+    ))}
+  </div>
+</section>
+
+<style>
+  .season__head { display: flex; justify-content: space-between; align-items: flex-end; gap: 1.5rem 2rem; flex-wrap: wrap; margin-bottom: 2rem; }
+  .season__head h2 { margin: 0; }
+  .season__tabs { display: inline-flex; padding: 5px; gap: 4px; border-radius: var(--r-pill); background: var(--mist); }
+  .season__tabs button {
+    display: inline-flex; align-items: center; gap: 0.45rem;
+    padding: 0.6rem 1.2rem; border: 0; border-radius: var(--r-pill); background: transparent; cursor: pointer;
+    font-weight: 700; color: var(--ink-soft);
+    transition: background-color 200ms ease, color 200ms ease, box-shadow 200ms ease, transform 160ms var(--ease-out);
+  }
+  .season__tabs button:active { transform: scale(0.97); }
+  .season__tabs button:hover { color: var(--ink); }
+  .season__tabs button[aria-selected='true'] { background: var(--white); color: var(--moss-700); box-shadow: var(--shadow-sm); }
+
+  .season__panel { display: grid; grid-template-columns: 0.75fr 1.25fr; gap: clamp(1.5rem, 4vw, 3rem); align-items: start; }
+  .season__panel[hidden] { display: none; }
+  @media (prefers-reduced-motion: no-preference) {
+    .season__panel:not([hidden]) .season__grid li { animation: cardIn 240ms var(--ease-out) both; }
+    .season__panel:not([hidden]) .season__grid li:nth-child(2) { animation-delay: 30ms; }
+    .season__panel:not([hidden]) .season__grid li:nth-child(3) { animation-delay: 60ms; }
+    .season__panel:not([hidden]) .season__grid li:nth-child(n + 4) { animation-delay: 90ms; }
+    .season[data-instant] .season__grid li { animation: none !important; }
+  }
+  @keyframes cardIn { from { opacity: 0; transform: translateY(6px); } }
+  .season__months { font-family: var(--font-display); font-weight: 700; color: var(--moss-500); margin-bottom: 0.4rem; }
+  .season__line { font-family: var(--font-display); font-stretch: 88%; font-weight: 750; font-size: clamp(1.4rem, 2.4vw, 1.8rem); line-height: 1.15; margin-bottom: 0.8rem; }
+  .season__grid { list-style: none; display: grid; grid-template-columns: repeat(auto-fill, minmax(210px, 1fr)); gap: 0.75rem; }
+  .season__card {
+    display: flex; flex-direction: column; gap: 0.2rem;
+    height: 100%; padding: 1rem 1.15rem 1.1rem; border-top: 3px solid var(--lime-400); border-radius: 16px; background: var(--white); border: 1px solid var(--line);
+    text-decoration: none; transition: border-color 200ms ease, transform 200ms var(--ease-out), box-shadow 200ms ease;
+  }
+  @media (hover: hover) and (pointer: fine) {
+    .season__card:hover { border-color: rgba(63, 90, 54, 0.4); transform: translateY(-2px); box-shadow: var(--shadow-md); }
+  }
+  .season__name { font-weight: 700; }
+  .season__desc { font-size: 0.92rem; color: var(--ink-soft); line-height: 1.4; margin-bottom: 0.6rem; }
+  .season__price { margin-top: auto; align-self: flex-start; padding: 0.15rem 0.55rem; border-radius: var(--r-pill); background: var(--lime-400); font-size: 0.8rem; font-weight: 700; }
+  @media (max-width: 860px) {
+    .season__panel { grid-template-columns: 1fr; }
+    .season__tabs { width: 100%; overflow-x: auto; padding: 6px; }
+    .season__tabs button { flex: 1; justify-content: center; padding-inline: 0.7rem; }
+  }
+</style>
+
+<script>
+  document.querySelectorAll<HTMLElement>('[data-season]').forEach((root) => {
+    const tabs = [...root.querySelectorAll<HTMLButtonElement>('[data-tab]')];
+    const select = (key: string, focus = false) => {
+      tabs.forEach((t) => {
+        const on = t.dataset.tab === key;
+        t.setAttribute('aria-selected', String(on));
+        t.tabIndex = on ? 0 : -1;
+        if (on && focus) t.focus();
+      });
+      root.querySelectorAll<HTMLElement>('[data-panel]').forEach((p) => (p.hidden = p.dataset.panel !== key));
+    };
+    // Match the visitor's real month, not the build date
+    const m = new Date().getMonth();
+    select(m >= 3 && m <= 4 ? 'spring' : m >= 5 && m <= 7 ? 'summer' : m >= 8 && m <= 10 ? 'fall' : 'winter');
+    tabs.forEach((t, i) => {
+      t.addEventListener('click', () => { delete root.dataset.instant; select(t.dataset.tab!); });
+      t.addEventListener('keydown', (e) => {
+        // Keyboard switching is instant (no card animation)
+        let target = -1;
+        if (e.key === 'ArrowRight') target = (i + 1) % tabs.length;
+        else if (e.key === 'ArrowLeft') target = (i - 1 + tabs.length) % tabs.length;
+        else if (e.key === 'Home') target = 0;
+        else if (e.key === 'End') target = tabs.length - 1;
+        if (target < 0) return;
+        e.preventDefault();
+        root.dataset.instant = '';
+        select(tabs[target].dataset.tab!, true);
+      });
+    });
+  });
+</script>

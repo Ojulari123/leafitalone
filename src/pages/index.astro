@@ -1,0 +1,509 @@
+---
+import Base from '../layouts/Base.astro';
+import Icon from '../components/Icon.astro';
+import CtaBand from '../components/CtaBand.astro';
+import SeasonTabs from '../components/SeasonTabs.astro';
+import WorkCarousel from '../components/WorkCarousel.astro';
+import { site } from '../data/site';
+import { servicesIn, groupLabels, mulchOptions } from '../data/services';
+import { photos, src, srcset } from '../data/photos';
+import { reviews } from '../data/reviews';
+import { neighbourhoods } from '../data/areas';
+
+// Hero slideshow: real Leaf It Alone jobs
+const slides = [
+  { id: 'db3d51_2958b7b850514d60b2e55e8bfa548668', caption: 'River rock and black mulch garden' },
+  { id: 'db3d51_5e67f837c2fc422b824b8f9f58a7cec9', caption: 'Raised bed with armour stone edging' },
+  { id: 'db3d51_083fce0f7b174aefbec05c059e6654a9', caption: 'Front beds in fresh black mulch' },
+  { id: 'db3d51_c20fb5716bd84f1c80cc468c870a7c2d', caption: 'Flagstone patio' },
+  { id: 'db3d51_2e9cd6e6a9cc444793bfc6b8da56561d', caption: 'Curved front bed with a clean edge' },
+].map((sl) => ({ ...sl, alt: photos.find((p) => p.id === sl.id)!.alt }));
+const lawnId = 'db3d51_f3552fe1348f42a6b38cd21e94e824bb';
+const reasons = [
+  { t: 'Reliable and on time', d: 'We show up when scheduled and tell you if weather changes the plan.' },
+  { t: 'Attention to detail', d: 'Crisp mowing lines, clean edges and a proper cleanup before we leave.' },
+  { t: 'Professional equipment', d: 'Commercial-grade mowers, trimmers and blowers.' },
+  { t: 'Respect for your property', d: 'Gates closed and pets kept in mind on every visit.' },
+  { t: 'Friendly, local service', d: 'Owned and run by Josh, right here in Guelph.' },
+];
+const lorna = reviews[0];
+---
+<Base
+  title="Lawn Care & Landscaping in Guelph | Leaf It Alone"
+  description="Locally owned lawn care and landscaping in Guelph. Mowing from $55 a visit, spring and fall cleanups, sod, mulch, stone gardens and more. Free, no-obligation quotes."
+>
+  <!-- Hero: full-bleed slideshow of real jobs -->
+  <section class="hero on-dark" data-hero>
+    <div class="hero__slides">
+      {slides.map((sl, i) => (
+        <figure class:list={['hero__slide', { 'is-active': i === 0 }]} style={`--dx:${i % 2 ? '-1.5%' : '1.5%'}`} data-slide data-caption={sl.caption}>
+          <img
+            src={src(sl.id, 1920, 1200, 82)}
+            srcset={`${src(sl.id, 960, 720, 80)} 960w, ${src(sl.id, 1440, 960, 80)} 1440w, ${src(sl.id, 1920, 1200, 82)} 1920w`}
+            sizes="100vw"
+            alt={sl.alt}
+            width="1920" height="1200"
+            loading={i === 0 ? 'eager' : 'lazy'}
+            fetchpriority={i === 0 ? 'high' : 'auto'}
+            decoding={i === 0 ? 'sync' : 'async'}
+          />
+        </figure>
+      ))}
+    </div>
+    <div class="hero__shade" aria-hidden="true"></div>
+
+    <div class="wrap hero__inner">
+      <div class="hero__copy">
+        <h1>Lawn care &amp; landscaping in <span class="mark">Guelph</span></h1>
+        <p class="lede">Mowing, cleanups, sod, mulch and stone gardens from a locally owned crew. Free, no-obligation estimates.</p>
+        <div class="btn-row">
+          <a href="/contact" class="btn">Get a free quote<span class="btn__icon"><Icon name="arrow-right" weight="bold" /></span></a>
+          <a href={site.phoneHref} class="btn btn--ghost"><Icon name="phone" />Call {site.phone}</a>
+        </div>
+      </div>
+
+      <div class="hero__meta">
+        <p class="hero__caption" aria-live="polite"><span data-hero-caption>{slides[0].caption}</span>, Guelph</p>
+        <div class="hero__dots">
+          {slides.map((_, i) => (
+            <button class:list={['hero__dot', { 'is-active': i === 0 }]} data-dot={i} aria-label={`Show photo ${i + 1} of ${slides.length}`} aria-pressed={i === 0 ? 'true' : 'false'}><span></span></button>
+          ))}
+          <button class="hero__pause" data-hero-pause aria-label="Pause slideshow"><span data-icon-pause><Icon name="pause" weight="fill" /></span><span data-icon-play hidden><Icon name="play" weight="fill" /></span></button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Trust strip -->
+  <section class="trust" aria-label="Why book with us">
+    <div class="wrap trust__row">
+      <a class="trust__item" href="/testimonials">
+        <span class="stars" aria-hidden="true">{[1,2,3,4,5].map(() => <Icon name="star" weight="fill" />)}</span>
+        <span><strong>{site.rating.score} on Google</strong><small>{site.rating.count} reviews</small></span>
+      </a>
+      <div class="trust__item"><Icon name="seal-check" /><span><strong>Free estimates</strong><small>No obligation to book</small></span></div>
+      <div class="trust__item"><Icon name="rows" /><span><strong>Mowing from $55</strong><small>Per visit, residential</small></span></div>
+      <div class="trust__item"><Icon name="house" /><span><strong>Locally owned</strong><small>Run by Josh, in Guelph</small></span></div>
+    </div>
+  </section>
+
+  <!-- Services bento -->
+  <section class="section">
+    <div class="wrap">
+      <div class="section-head">
+        <h2>Lawns, cleanups, beds and trees</h2>
+        <p class="lede">Weekly mowing, spring and fall cleanups, and one-off projects like sod, mulch and stone.</p>
+      </div>
+
+      <div class="bento">
+        <a href="/services#lawn" class="bento__cell bento__lawn" data-reveal>
+          <img src={src(lawnId, 760, 900)} srcset={srcset(lawnId, 620, 760)} sizes="(max-width: 860px) 92vw, 420px" alt="" loading="lazy" width="620" height="760" />
+          <div class="bento__body">
+            <span class="bento__icon"><Icon name="rows" /></span>
+            <h3>{groupLabels.lawn.name}</h3>
+            <p>{groupLabels.lawn.blurb}</p>
+            <ul class="bento__list">{servicesIn('lawn').map((s) => <li>{s.name}</li>)}</ul>
+          </div>
+        </a>
+
+        <a href="/services#cleanups" class="bento__cell bento__cleanups" data-reveal style="--i:1">
+          <span class="bento__icon"><Icon name="leaf" /></span>
+          <h3>{groupLabels.cleanups.name}</h3>
+          <p>{groupLabels.cleanups.blurb}</p>
+          <ul class="bento__list">{servicesIn('cleanups').map((s) => <li>{s.name}</li>)}</ul>
+        </a>
+
+        <a href="/lawn-mowing-guelph" class="bento__cell bento__price" data-reveal style="--i:2">
+          <span class="bento__kicker">Weekly or bi-weekly mowing</span>
+          <span class="bento__big">$55</span>
+          <span class="bento__unit">starting price per visit</span>
+          <span class="text-link">What is included <Icon name="arrow-right" /></span>
+        </a>
+
+        <a href="/services#beds" class="bento__cell bento__beds" data-reveal style="--i:3">
+          <div>
+            <span class="bento__icon"><Icon name="circles-three" /></span>
+            <h3>{groupLabels.beds.name}</h3>
+            <p>{groupLabels.beds.blurb}</p>
+            <ul class="bento__list">{servicesIn('beds').map((s) => <li>{s.name}</li>)}</ul>
+          </div>
+          <div class="bento__swatches" aria-label="Mulch colours we offer">
+            {mulchOptions.map((m) => (
+              <span class="swatch" style={`--a:${m.swatch[0]};--b:${m.swatch[1]};--c:${m.swatch[2]}`}>
+                <span class="swatch__name">{m.name}</span>
+              </span>
+            ))}
+          </div>
+        </a>
+
+        <a href="/services#trees" class="bento__cell bento__trees" data-reveal style="--i:4">
+          <span class="bento__icon"><Icon name="tree" /></span>
+          <h3>{groupLabels.trees.name}</h3>
+          <p>{groupLabels.trees.blurb}</p>
+          <ul class="bento__list">{servicesIn('trees').map((s) => <li>{s.name}</li>)}</ul>
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- Seasonal -->
+  <SeasonTabs />
+
+  <!-- Recent work -->
+  <WorkCarousel />
+
+  <!-- How it works -->
+  <section class="section section--mist">
+    <div class="wrap">
+      <div class="section-head section-head--center">
+        <h2>How it works</h2>
+        <p class="lede">Request a quote, get a price, book the day.</p>
+      </div>
+      <ol class="steps">
+        <li class="steps__item" data-reveal>
+          <span class="steps__num">1</span>
+          <h3>Tell us about your yard</h3>
+          <p>Choose your services and add your address. Photos help us price faster.</p>
+        </li>
+        <li class="steps__item" data-reveal style="--i:1">
+          <span class="steps__num">2</span>
+          <h3>Get your free quote</h3>
+          <p>Josh reviews the job and sends a clear price. Bigger projects may get a quick visit first.</p>
+        </li>
+        <li class="steps__item" data-reveal style="--i:2">
+          <span class="steps__num">3</span>
+          <h3>We take care of it</h3>
+          <p>We show up on the day we booked and get it done.</p>
+        </li>
+      </ol>
+      <div class="steps__cta">
+        <a href="/contact" class="btn btn--moss">Get a free quote<span class="btn__icon"><Icon name="arrow-right" weight="bold" /></span></a>
+      </div>
+    </div>
+  </section>
+
+  <!-- Reviews + reasons -->
+  <section class="section">
+    <div class="wrap why">
+      <figure class="why__quote" data-reveal>
+        <span class="stars" role="img" aria-label="5 out of 5 stars">{[1,2,3,4,5].map(() => <Icon name="star" weight="fill" />)}</span>
+        <blockquote>
+          <p>“{lorna.text}”</p>
+        </blockquote>
+        <figcaption>
+          <strong>{lorna.name}</strong>
+          <span>{lorna.service}, Guelph</span>
+        </figcaption>
+        <a href="/testimonials" class="text-link">Read more reviews <Icon name="arrow-right" /></a>
+      </figure>
+
+      <div class="why__list">
+        <h2>What you get with Leaf It Alone</h2>
+        <ul class="reasons">
+          {reasons.map((r, i) => (
+            <li>
+              <h3>{r.t}</h3><p>{r.d}</p>
+            </li>
+          ))}
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- Service area -->
+  <section class="section area">
+    <div class="wrap area__inner">
+      <div class="area__copy">
+        <h2>Serving all of Guelph</h2>
+        <p class="lede">Based in Guelph and working across the whole city, plus nearby communities just outside it.</p>
+        <p class="area__names" aria-label="Neighbourhoods we serve">
+          {neighbourhoods.slice(0, 12).map((n) => <><span>{n}</span>{' '}</>)}
+          <span class="area__more">and more</span>
+        </p>
+        <a href="/service-areas" class="text-link">See every area we cover <Icon name="arrow-right" /></a>
+      </div>
+      <div class="area__map">
+        <iframe
+          title="Map of Guelph, Ontario, the Leaf It Alone service area"
+          src="https://www.google.com/maps?q=Guelph,+Ontario&z=12&output=embed"
+          loading="lazy"
+          referrerpolicy="no-referrer-when-downgrade"
+        ></iframe>
+      </div>
+    </div>
+  </section>
+
+  <CtaBand />
+</Base>
+
+<script>
+  const hero = document.querySelector<HTMLElement>('[data-hero]');
+  if (hero) {
+    const slides = [...hero.querySelectorAll<HTMLElement>('[data-slide]')];
+    const dots = [...hero.querySelectorAll<HTMLButtonElement>('[data-dot]')];
+    const caption = hero.querySelector<HTMLElement>('[data-hero-caption]')!;
+    const pauseBtn = hero.querySelector<HTMLButtonElement>('[data-hero-pause]')!;
+    const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+    let index = 0;
+    let timer: number | undefined;
+    let playing = !reduce;
+
+    const show = (i: number) => {
+      index = (i + slides.length) % slides.length;
+      slides.forEach((s, j) => s.classList.toggle('is-active', j === index));
+      dots.forEach((d, j) => { d.classList.toggle('is-active', j === index); d.setAttribute('aria-pressed', String(j === index)); });
+      caption.textContent = slides[index].dataset.caption ?? '';
+    };
+    const schedule = () => { clearInterval(timer); if (playing) timer = window.setInterval(() => show(index + 1), 6500); };
+    const setPlaying = (on: boolean) => {
+      playing = on;
+      pauseBtn.setAttribute('aria-label', on ? 'Pause slideshow' : 'Play slideshow');
+      pauseBtn.querySelector<HTMLElement>('[data-icon-pause]')!.hidden = !on;
+      pauseBtn.querySelector<HTMLElement>('[data-icon-play]')!.hidden = on;
+      schedule();
+    };
+    dots.forEach((d) => d.addEventListener('click', () => { show(Number(d.dataset.dot)); schedule(); }));
+    pauseBtn.addEventListener('click', () => setPlaying(!playing));
+    // Stop cycling while the tab is hidden or the hero is off screen
+    document.addEventListener('visibilitychange', () => { if (document.hidden) clearInterval(timer); else schedule(); });
+    new IntersectionObserver(([e]) => { if (e.isIntersecting) schedule(); else clearInterval(timer); }).observe(hero);
+    setPlaying(playing);
+  }
+</script>
+
+<style>
+  /* Hero */
+  .hero {
+    position: relative;
+    display: flex;
+    min-height: min(780px, calc(100dvh - 112px));
+    overflow: hidden;
+    background: var(--moss-900);
+    color: var(--lime-100);
+  }
+  .hero__slides { position: absolute; inset: 0; }
+  .hero__slide { position: absolute; inset: 0; margin: 0; opacity: 0; transition: opacity 1400ms ease; }
+  .hero__slide.is-active { opacity: 1; }
+  .hero__slide img { width: 100%; height: 100%; object-fit: cover; }
+  @media (prefers-reduced-motion: no-preference) {
+    /* Slow push-in on the photo that is showing */
+    .hero__slide img { transform: scale(1.08); transition: transform 7000ms cubic-bezier(0.2, 0, 0.3, 1); }
+    .hero__slide.is-active img { transform: scale(1) translateX(var(--dx)); }
+    .hero__copy > * { animation: rise 600ms var(--ease-out) both; }
+    .hero__copy > :nth-child(2) { animation-delay: 80ms; }
+    .hero__copy > :nth-child(3) { animation-delay: 160ms; }
+  }
+  @keyframes rise { from { opacity: 0; transform: translateY(12px); } }
+  .hero__shade {
+    position: absolute; inset: 0;
+    background:
+      linear-gradient(90deg, rgba(21, 30, 18, 0.88) 0%, rgba(21, 30, 18, 0.62) 42%, rgba(21, 30, 18, 0.12) 78%),
+      linear-gradient(0deg, rgba(21, 30, 18, 0.7) 0%, transparent 35%);
+  }
+
+  .hero__inner {
+    position: relative;
+    display: flex; flex-direction: column; justify-content: center;
+    padding-block: clamp(3.5rem, 8vw, 6rem) 1.75rem;
+  }
+  .hero__copy { max-width: 40rem; margin-block: auto; }
+  .hero h1 { color: var(--white); font-size: clamp(2.9rem, 6.6vw, 5.6rem); line-height: 0.96; margin-bottom: 0.35em; text-shadow: 0 2px 30px rgba(21, 30, 18, 0.35); }
+  .hero .lede { max-width: 34rem; margin-bottom: 2rem; font-size: clamp(1.15rem, 1.7vw, 1.35rem); color: rgba(244, 250, 217, 0.92); }
+
+  .hero__meta { display: flex; justify-content: space-between; align-items: center; gap: 1rem; margin-top: 3rem; }
+  .hero__caption { margin: 0; font-size: 0.92rem; font-weight: 600; color: var(--lime-100); }
+  .hero__dots { display: flex; align-items: center; gap: 0.25rem; }
+  .hero__dot { display: grid; place-items: center; width: 36px; height: 36px; padding: 0; border: 0; background: none; cursor: pointer; }
+  .hero__dot span { display: block; width: 22px; height: 3px; border-radius: 3px; background: rgba(244, 250, 217, 0.35); transition: background-color 300ms ease, width 300ms var(--ease-out); }
+  .hero__dot.is-active span { width: 34px; background: var(--lime-400); }
+  .hero__dot:hover span { background: rgba(244, 250, 217, 0.7); }
+  .hero__dot.is-active:hover span { background: var(--lime-400); }
+  .hero__pause { display: grid; place-items: center; width: 36px; height: 36px; margin-left: 0.25rem; padding: 0; border: 0; border-radius: 50%; background: none; color: var(--lime-100); cursor: pointer; }
+  .hero__pause :global(svg) { width: 16px; height: 16px; }
+  .hero__pause span { display: grid; }
+  .hero__pause span[hidden] { display: none; }
+  .hero__pause:hover { color: var(--lime-400); }
+  @media (max-width: 640px) {
+    .hero { min-height: auto; }
+    .hero__shade { background: linear-gradient(180deg, rgba(21, 30, 18, 0.55) 0%, rgba(21, 30, 18, 0.82) 60%, rgba(21, 30, 18, 0.9) 100%); }
+    .hero__meta { flex-direction: column; align-items: flex-start; margin-top: 2rem; }
+  }
+  @media (max-width: 480px) {
+    .hero .btn-row .btn { width: 100%; justify-content: space-between; }
+    .hero .btn-row .btn--ghost { justify-content: center; }
+  }
+
+  /* Trust */
+  .trust { background: var(--white); border-bottom: 1px solid var(--line); }
+  .trust__row { display: grid; grid-template-columns: repeat(4, 1fr); }
+  .trust__item {
+    display: flex; align-items: center; gap: 0.8rem; padding: 1.4rem 1rem;
+    text-decoration: none; border-left: 1px solid var(--line);
+  }
+  .trust__item:first-child { border-left: 0; padding-left: 0; }
+  .trust__item > :global(svg) { width: 30px; height: 30px; color: var(--moss-600); flex: none; }
+  .trust__item strong { display: block; font-family: var(--font-display); font-stretch: 92%; font-size: 1.08rem; line-height: 1.2; }
+  .trust__item small { display: block; font-size: 0.9rem; color: var(--ink-soft); }
+  a.trust__item:hover strong { text-decoration: underline; text-decoration-color: var(--lime-400); text-decoration-thickness: 2px; text-underline-offset: 3px; }
+  @media (max-width: 900px) {
+    .trust__row { grid-template-columns: 1fr 1fr; }
+    .trust__item { padding: 1.1rem 0.75rem; }
+    .trust__item:nth-child(3) { border-left: 0; padding-left: 0; }
+    .trust__item:nth-child(n + 3) { border-top: 1px solid var(--line); }
+  }
+  @media (max-width: 480px) {
+    .trust__item { flex-direction: column; align-items: flex-start; gap: 0.5rem; }
+    .trust__item > :global(svg) { width: 24px; height: 24px; }
+    .trust .stars :global(svg) { width: 14px; height: 14px; }
+  }
+
+  /* Bento */
+  .bento {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    grid-template-rows: auto auto;
+    gap: 1rem;
+  }
+  .bento__cell {
+    position: relative;
+    display: flex; flex-direction: column;
+    padding: clamp(1.4rem, 2.5vw, 2rem);
+    border-radius: 22px;
+    background: var(--white);
+    border: 1px solid var(--line);
+    text-decoration: none;
+    overflow: hidden;
+    transition: transform 200ms var(--ease-out), box-shadow 200ms ease,
+      opacity 500ms var(--ease-out) calc(var(--i, 0) * 60ms), translate 500ms var(--ease-out) calc(var(--i, 0) * 60ms);
+  }
+  @media (hover: hover) and (pointer: fine) {
+    .bento__cell:hover { transform: translateY(-3px); box-shadow: var(--shadow-md); }
+    .bento__lawn:hover { transform: none; }
+  }
+  .bento__cell h3 { margin-bottom: 0.3em; }
+  .bento__cell p { color: var(--ink-soft); margin-bottom: 1rem; }
+  .bento__icon {
+    display: grid; place-items: center; width: 44px; height: 44px; margin-bottom: 1.25rem;
+    border-radius: 12px; background: var(--lime-400); color: var(--moss-950);
+  }
+  .bento__icon :global(svg) { width: 24px; height: 24px; }
+  .bento__list { list-style: none; display: flex; flex-wrap: wrap; gap: 0.4rem; margin-top: auto; }
+  .bento__list li { padding: 0.3rem 0.7rem; border-radius: var(--r-pill); background: var(--mist); font-size: 0.88rem; font-weight: 600; }
+
+  .bento__lawn { grid-row: 1 / 3; padding: 0; color: var(--white); border: 0; min-height: 520px; justify-content: flex-end; }
+  .bento__lawn img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; transition: transform 400ms var(--ease-out); }
+  @media (hover: hover) and (pointer: fine) { .bento__lawn:hover img { transform: scale(1.03); } }
+  .bento__lawn .bento__body {
+    position: relative; padding: clamp(1.4rem, 2.5vw, 2rem); padding-top: 6rem;
+    background: linear-gradient(180deg, transparent, rgba(21, 30, 18, 0.88) 45%);
+  }
+  .bento__lawn p { color: rgba(244, 250, 217, 0.85); }
+  .bento__lawn .bento__list li { background: rgba(244, 250, 217, 0.16); color: var(--white); }
+
+  .bento__cleanups { background: var(--lime-200); border-color: transparent; }
+  .bento__cleanups .bento__list li { background: rgba(255, 255, 255, 0.6); }
+
+  .bento__price { background: var(--moss-600); color: var(--lime-100); border: 0; justify-content: center; }
+  .bento__kicker { font-weight: 700; color: var(--lime-400); }
+  .bento__big { font-family: var(--font-display); font-stretch: 75%; font-weight: 800; font-size: clamp(4.5rem, 8vw, 6.5rem); line-height: 0.9; color: var(--white); margin-top: 0.4rem; }
+  .bento__unit { margin-bottom: 1.25rem; color: rgba(244, 250, 217, 0.8); }
+  .bento__price .text-link { color: var(--lime-400); text-decoration-color: rgba(206, 235, 76, 0.45); }
+
+  .bento__beds { gap: 1.5rem; }
+  .bento__beds > div:first-child { display: flex; flex-direction: column; flex: 1; }
+  .bento__swatches { display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.5rem; flex: 1; align-content: stretch; }
+  .swatch {
+    position: relative; display: flex; align-items: flex-end;
+    min-height: 74px; padding: 0.5rem 0.6rem; border-radius: 12px; overflow: hidden;
+    background:
+      radial-gradient(circle at 20% 30%, var(--b) 0 2px, transparent 3px) 0 0 / 11px 9px,
+      radial-gradient(circle at 70% 60%, var(--c) 0 2.5px, transparent 3.5px) 0 0 / 13px 12px,
+      radial-gradient(circle at 40% 80%, var(--b) 0 1.5px, transparent 2.5px) 0 0 / 7px 8px,
+      linear-gradient(135deg, var(--a), var(--c));
+  }
+  .swatch__name { position: relative; font-size: 0.78rem; font-weight: 700; color: var(--white); text-shadow: 0 1px 2px rgba(0, 0, 0, 0.6); }
+
+  .bento__cleanups { grid-column: 2 / 3; grid-row: 1 / 2; }
+  .bento__price { grid-column: 3 / 4; grid-row: 1 / 2; }
+  .bento__beds { grid-column: 2 / 3; grid-row: 2 / 3; flex-direction: column; }
+  .bento__trees { grid-column: 3 / 4; grid-row: 2 / 3; background: var(--mist); border-color: transparent; }
+  .bento__trees .bento__list li { background: rgba(255, 255, 255, 0.7); }
+
+  @media (max-width: 1023px) {
+    .bento { grid-template-columns: 1fr 1fr; }
+    .bento__lawn { grid-row: auto; grid-column: 1 / -1; min-height: 420px; }
+    .bento__cleanups, .bento__price, .bento__beds, .bento__trees { grid-column: auto; grid-row: auto; }
+  }
+  @media (max-width: 640px) {
+    .bento { grid-template-columns: 1fr; }
+    .bento__lawn { min-height: 380px; }
+  }
+
+  /* Steps */
+  .steps { list-style: none; display: grid; grid-template-columns: repeat(3, 1fr); gap: clamp(1rem, 3vw, 2.5rem); position: relative; counter-reset: s; }
+  .steps::before {
+    content: ''; position: absolute; top: 27px; left: 8%; right: 8%; height: 2px;
+    background: repeating-linear-gradient(90deg, var(--moss-300) 0 10px, transparent 10px 18px);
+  }
+  .steps__item { position: relative; text-align: center; padding-inline: 0.5rem; }
+  .steps__num {
+    position: relative; display: grid; place-items: center; width: 56px; height: 56px; margin: 0 auto 1.25rem;
+    border-radius: 50%; background: var(--moss-600); color: var(--lime-400);
+    font-family: var(--font-display); font-stretch: 80%; font-weight: 800; font-size: 1.6rem;
+    box-shadow: 0 0 0 8px var(--mist);
+  }
+  .steps__item p { color: var(--ink-soft); max-width: 30ch; margin-inline: auto; }
+  .steps__cta { display: flex; justify-content: center; margin-top: 2.5rem; }
+  @media (max-width: 760px) {
+    .steps { grid-template-columns: 1fr; gap: 2rem; }
+    .steps::before { top: 0; bottom: 0; left: 27px; right: auto; width: 2px; height: auto; background: repeating-linear-gradient(180deg, var(--moss-300) 0 10px, transparent 10px 18px); }
+    .steps__item { text-align: left; padding-left: 80px; }
+    .steps__num { position: absolute; left: 0; top: -6px; margin: 0; }
+    .steps__item p { margin-inline: 0; }
+  }
+
+  /* Why */
+  .why { display: grid; grid-template-columns: 0.9fr 1.1fr; gap: clamp(2rem, 6vw, 5rem); align-items: start; }
+  .why__quote {
+    margin: 0; padding: clamp(1.75rem, 4vw, 2.75rem);
+    border-radius: 24px; background: var(--lime-200);
+    position: sticky; top: calc(var(--header-h) + 24px);
+  }
+  .why__quote blockquote { margin: 1rem 0 1.5rem; }
+  .why__quote blockquote p {
+    font-family: var(--font-display); font-stretch: 88%; font-weight: 700;
+    font-size: clamp(1.45rem, 2.6vw, 2rem); line-height: 1.18; color: var(--moss-950); margin: 0;
+  }
+  .why__quote figcaption { display: grid; margin-bottom: 1.5rem; }
+  .why__quote figcaption span { color: var(--ink-soft); }
+  .reasons { list-style: none; display: grid; grid-template-columns: 1fr 1fr; gap: 1.75rem 2rem; margin-top: 2rem; }
+  .reasons li { padding-top: 1rem; border-top: 3px solid var(--lime-400); }
+  .reasons li:last-child { grid-column: 1 / -1; }
+  .reasons h3 { margin: 0 0 0.3rem; font-size: 1.2rem; }
+  @media (max-width: 560px) { .reasons { grid-template-columns: 1fr; } }
+  .reasons p { margin: 0; color: var(--ink-soft); }
+  @media (max-width: 860px) {
+    .why { grid-template-columns: 1fr; }
+    .why__quote { position: static; }
+  }
+
+  /* Area */
+  .area__inner { display: grid; grid-template-columns: 1fr 1fr; gap: clamp(2rem, 5vw, 4.5rem); align-items: center; }
+  .area__copy h2 { margin-bottom: 0.3em; }
+  .area__names {
+    margin: 1.75rem 0 2rem;
+    font-family: var(--font-display); font-stretch: 88%; font-weight: 700;
+    font-size: clamp(1.2rem, 1.9vw, 1.5rem); line-height: 1.55; color: var(--moss-900);
+    text-wrap: pretty;
+  }
+  .area__names span { white-space: nowrap; }
+  .area__names span:not(:last-child)::after { content: '/'; margin: 0 0.45em; color: var(--moss-300); font-weight: 400; }
+  .area__names .area__more { color: var(--moss-500); font-weight: 600; }
+  .area__map {
+    position: relative; border-radius: 26px; overflow: hidden;
+    background: var(--mist); box-shadow: var(--shadow-lg);
+    outline: 8px solid var(--lime-200); outline-offset: -1px;
+  }
+  .area__map iframe { display: block; width: 100%; height: clamp(320px, 38vw, 460px); border: 0; filter: saturate(0.75); }
+  @media (max-width: 860px) { .area__inner { grid-template-columns: 1fr; } }
+</style>

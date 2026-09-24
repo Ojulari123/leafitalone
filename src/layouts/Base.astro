@@ -1,0 +1,89 @@
+---
+import '../styles/global.css';
+import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
+import MobileBar from '../components/MobileBar.astro';
+import { site } from '../data/site';
+import { services } from '../data/services';
+import { src as photoSrc } from '../data/photos';
+
+interface Props {
+  title: string;
+  description: string;
+  image?: string; // photo id
+  schema?: Record<string, unknown>[];
+  noindex?: boolean;
+  ogType?: 'website' | 'article';
+  published?: Date;
+}
+const { title, description, image = 'db3d51_2958b7b850514d60b2e55e8bfa548668', schema = [], noindex = false, ogType = 'website', published } = Astro.props;
+const canonical = new URL(Astro.url.pathname.replace(/\.html$/, '').replace(/\/index$/, '/'), site.url).href.replace(/\/$/, '') || site.url;
+const ogImage = photoSrc(image, 1200, 630);
+
+const business = {
+  '@context': 'https://schema.org',
+  '@type': 'HomeAndConstructionBusiness',
+  '@id': `${site.url}/#business`,
+  name: site.name,
+  alternateName: site.legalName,
+  url: site.url,
+  telephone: '+1-519-400-0237',
+  email: site.email,
+  image: ogImage,
+  priceRange: '$$',
+  address: { '@type': 'PostalAddress', addressLocality: 'Guelph', addressRegion: 'ON', addressCountry: 'CA' },
+  areaServed: { '@type': 'City', name: 'Guelph' },
+  sameAs: [site.social.facebook].filter(Boolean),
+  makesOffer: services.map((s) => ({ '@type': 'Offer', itemOffered: { '@type': 'Service', name: s.name, url: `${site.url}/${s.slug}` } })),
+};
+---
+<!doctype html>
+<html lang="en-CA">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{title}</title>
+    <meta name="description" content={description} />
+    <link rel="canonical" href={canonical} />
+    {noindex && <meta name="robots" content="noindex" />}
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <meta name="theme-color" content="#3f5a36" />
+    <meta property="og:type" content={ogType} />
+    {published && <meta property="article:published_time" content={published.toISOString()} />}
+    <meta property="og:site_name" content={site.name} />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={canonical} />
+    <meta property="og:image" content={ogImage} />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content="A garden bed landscaped by Leaf It Alone in Guelph" />
+    <meta property="og:locale" content="en_CA" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <link rel="preconnect" href="https://static.wixstatic.com" />
+    <script is:inline>document.documentElement.classList.add('js')</script>
+    <script type="application/ld+json" set:html={JSON.stringify(business)} />
+    {schema.map((s) => <script type="application/ld+json" set:html={JSON.stringify({ '@context': 'https://schema.org', ...s })} />)}
+  </head>
+  <body>
+    <a class="skip-link" href="#main">Skip to content</a>
+    <Header />
+    <main id="main">
+      <slot />
+    </main>
+    <Footer />
+    <MobileBar />
+    <script>
+      // Reveal-on-scroll. Elements with [data-reveal] fade up once.
+      const els = document.querySelectorAll<HTMLElement>('[data-reveal]');
+      if ('IntersectionObserver' in window && !matchMedia('(prefers-reduced-motion: reduce)').matches) {
+        const io = new IntersectionObserver((entries) => {
+          for (const e of entries) if (e.isIntersecting) { e.target.classList.add('is-in'); io.unobserve(e.target); }
+        }, { rootMargin: '0px 0px -8% 0px', threshold: 0.1 });
+        els.forEach((el) => io.observe(el));
+      } else {
+        els.forEach((el) => el.classList.add('is-in'));
+      }
+    </script>
+  </body>
+</html>

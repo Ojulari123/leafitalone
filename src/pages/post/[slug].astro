@@ -1,0 +1,90 @@
+---
+import { getCollection, render } from 'astro:content';
+import Base from '../../layouts/Base.astro';
+import PageHero from '../../components/PageHero.astro';
+import Icon from '../../components/Icon.astro';
+import CtaBand from '../../components/CtaBand.astro';
+import { site } from '../../data/site';
+import { services } from '../../data/services';
+import { src, srcset } from '../../data/photos';
+
+export async function getStaticPaths() {
+  const posts = await getCollection('blog');
+  return posts.map((post) => ({ params: { slug: post.id }, props: { post } }));
+}
+const { post } = Astro.props;
+const { Content } = await render(post);
+const svc = services.find((s) => s.slug === post.data.service);
+const others = (await getCollection('blog')).filter((p) => p.id !== post.id).slice(0, 3);
+const schema = [{
+  '@type': 'BlogPosting',
+  headline: post.data.title,
+  description: post.data.description,
+  datePublished: post.data.pubDate.toISOString(),
+  image: src(post.data.photo, 1200, 630),
+  author: { '@type': 'Organization', name: site.name },
+  publisher: { '@id': `${site.url}/#business` },
+  mainEntityOfPage: `${site.url}/post/${post.id}`,
+}];
+---
+<Base title={`${post.data.title} | Leaf It Alone`} description={post.data.description} image={post.data.photo} schema={schema} ogType="article" published={post.data.pubDate}>
+  <PageHero title={post.data.title} crumbs={[{ label: 'Blog', href: '/blog' }, { label: 'Article' }]}>
+    <p class="phmeta">{post.data.readMinutes} min read · By the Leaf It Alone crew</p>
+  </PageHero>
+  <section class="section">
+    <div class="wrap article">
+      <div>
+        <div class="photo article__photo"><img src={src(post.data.photo, 1100, 620)} srcset={srcset(post.data.photo, 1100, 620)} sizes="(max-width: 960px) 92vw, 760px" alt="" width="1100" height="620" /></div>
+        <div class="prose"><Content /></div>
+      </div>
+      <aside class="article__aside">
+        {svc && (
+          <div class="acard">
+            <span class="acard__icon"><Icon name={svc.icon} /></span>
+            <p class="acard__k">Related service</p>
+            <h3>{svc.name}</h3>
+            <p>{svc.card}</p>
+            <a href={`/${svc.slug}`} class="text-link">Learn more <Icon name="arrow-right" /></a>
+          </div>
+        )}
+        <div class="acard acard--moss">
+          <h3>Rather leave it to us?</h3>
+          <p>Free, no-obligation quotes for Guelph homes.</p>
+          <a href={svc ? `/contact?service=${svc.slug}` : '/contact'} class="btn btn--sm">Get a free quote<span class="btn__icon"><Icon name="arrow-right" weight="bold" /></span></a>
+        </div>
+      </aside>
+    </div>
+  </section>
+  {others.length > 0 && (
+    <section class="section section--mist section--tight">
+      <div class="wrap">
+        <h2 class="more__title">More yard tips</h2>
+        <ul class="more">
+          {others.map((p) => <li><a href={`/post/${p.id}`} class="more__link"><span>{p.data.title}</span><Icon name="arrow-right" /></a></li>)}
+        </ul>
+      </div>
+    </section>
+  )}
+  <CtaBand />
+</Base>
+<style>
+  .phmeta { margin: 0; color: rgba(244, 250, 217, 0.8); font-weight: 600; }
+  .article { display: grid; grid-template-columns: minmax(0, 1fr) 300px; gap: clamp(2rem, 5vw, 4rem); align-items: start; }
+  .article__photo { aspect-ratio: 110 / 62; margin-bottom: 2.5rem; }
+  .article__aside { position: sticky; top: calc(var(--header-h) + 24px); display: grid; gap: 1rem; }
+  .acard { padding: 1.5rem; border-radius: 22px; background: var(--white); border: 1px solid var(--line); }
+  .acard p { color: var(--ink-soft); font-size: 0.97rem; }
+  .acard__icon { display: grid; place-items: center; width: 44px; height: 44px; border-radius: 12px; background: var(--lime-400); margin-bottom: 1rem; }
+  .acard__icon :global(svg) { width: 22px; height: 22px; }
+  .acard__k { margin: 0 0 0.2rem; font-weight: 700; font-size: 0.85rem; color: var(--moss-500) !important; }
+  .acard--moss { background: var(--moss-600); border-color: transparent; }
+  .acard--moss h3 { color: var(--white); }
+  .acard--moss p { color: rgba(244, 250, 217, 0.82); }
+  @media (max-width: 960px) { .article { grid-template-columns: 1fr; } .article__aside { position: static; } }
+  .more__title { margin-bottom: 1.25rem; font-size: clamp(1.6rem, 3vw, 2.1rem); }
+  .more { list-style: none; display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.75rem; }
+  .more__link { display: flex; justify-content: space-between; align-items: center; gap: 1rem; height: 100%; padding: 1.1rem 1.25rem; border-radius: 16px; background: var(--white); border: 1px solid var(--line); font-weight: 700; text-decoration: none; }
+  .more__link :global(svg) { width: 18px; height: 18px; flex: none; color: var(--moss-600); }
+  .more__link:hover { border-color: var(--moss-600); }
+  @media (max-width: 860px) { .more { grid-template-columns: 1fr; } }
+</style>

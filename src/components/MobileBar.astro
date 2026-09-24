@@ -1,0 +1,30 @@
+---
+import Icon from './Icon.astro';
+import { site } from '../data/site';
+---
+<nav class="mbar" aria-label="Quick contact">
+  <a href={site.phoneHref} class="mbar__call"><Icon name="phone" weight="fill" />Call Josh</a>
+  <a href="/contact" class="mbar__quote">Get a free quote<Icon name="arrow-right" weight="bold" /></a>
+</nav>
+
+<style>
+  .mbar {
+    display: none;
+    position: fixed; left: 0; right: 0; bottom: 0; z-index: 45;
+    gap: 0.5rem; padding: 0.6rem 0.75rem calc(0.6rem + env(safe-area-inset-bottom));
+    background: rgba(251, 252, 248, 0.94);
+    backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
+    border-top: 1px solid var(--line);
+  }
+  .mbar a {
+    flex: 1; display: inline-flex; align-items: center; justify-content: center; gap: 0.5rem;
+    min-height: 50px; border-radius: var(--r-pill);
+    font-family: var(--font-display); font-stretch: 100%; font-weight: 700; text-decoration: none;
+    transition: transform 160ms var(--ease-out);
+  }
+  .mbar a:active { transform: scale(0.97); }
+  .mbar :global(svg) { width: 18px; height: 18px; }
+  .mbar__call { background: var(--white); border: 1.5px solid var(--line-strong); flex: 0.8; }
+  .mbar__quote { background: var(--lime-400); color: var(--moss-950); border: 1px solid rgba(21, 30, 18, 0.14); }
+  @media (max-width: 560px) { .mbar { display: flex; } }
+</style>

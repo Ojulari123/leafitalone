@@ -1,0 +1,24 @@
+---
+import Base from '../layouts/Base.astro';
+import PageHero from '../components/PageHero.astro';
+import Gallery from '../components/Gallery.astro';
+import CtaBand from '../components/CtaBand.astro';
+import { photos } from '../data/photos';
+---
+<Base
+  title="Landscaping Projects in Guelph | Mulch, Sod & Stone | Leaf It Alone"
+  description="Photos of real Leaf It Alone jobs around Guelph: mulch beds, stone gardens, flagstone, sod installs and lawns. See the work before you book."
+  image="db3d51_5e67f837c2fc422b824b8f9f58a7cec9"
+>
+  <PageHero
+    title="Our work around Guelph"
+    lede="Every photo here is a real Leaf It Alone job. Filter by type of work, then tap any photo to see it full size."
+    crumbs={[{ label: 'Projects' }]}
+  />
+  <section class="section">
+    <div class="wrap">
+      <Gallery items={photos} filters />
+    </div>
+  </section>
+  <CtaBand title="Want your yard to look like this?" picks={['mulch-installation-guelph', 'stone-installation-guelph', 'sod-installation-guelph', 'spring-cleanup-guelph']} />
+</Base>
