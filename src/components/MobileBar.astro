@@ -27,4 +27,8 @@ import { site } from '../data/site';
   .mbar__call { background: var(--white); border: 1.5px solid var(--line-strong); flex: 0.8; }
   .mbar__quote { background: var(--lime-400); color: var(--moss-950); border: 1px solid rgba(21, 30, 18, 0.14); }
   @media (max-width: 560px) { .mbar { display: flex; } }
+  @media (max-width: 360px) {
+    .mbar a { font-size: 0.95rem; gap: 0.35rem; white-space: nowrap; }
+    .mbar__call { flex: 0.6; }
+  }
 </style>

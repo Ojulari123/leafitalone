@@ -118,7 +118,7 @@ const groups = Object.keys(groupLabels) as ServiceGroup[];
 <style>
   .topbar { background: var(--moss-900); color: var(--lime-100); font-size: 0.9rem; }
   .topbar__inner { display: flex; justify-content: space-between; align-items: center; gap: 1rem; min-height: 40px; }
-  .topbar a { display: inline-flex; align-items: center; gap: 0.45rem; text-decoration: none; opacity: 0.92; }
+  .topbar a { display: inline-flex; align-items: center; gap: 0.45rem; min-height: 40px; text-decoration: none; opacity: 0.92; }
   .topbar a:hover { opacity: 1; text-decoration: underline; text-underline-offset: 3px; }
   .topbar :global(svg) { width: 16px; height: 16px; color: var(--lime-400); }
   .topbar__season { font-weight: 600; }
@@ -126,6 +126,11 @@ const groups = Object.keys(groupLabels) as ServiceGroup[];
   @media (max-width: 767px) {
     .topbar__contact { display: none; }
     .topbar__inner { justify-content: center; }
+  }
+  @media (max-width: 380px) {
+    .topbar { font-size: 0.82rem; }
+    .topbar__season { white-space: nowrap; }
+    .topbar__season :global(svg:last-child) { display: none; }
   }
 
   .header {
@@ -257,6 +262,7 @@ const groups = Object.keys(groupLabels) as ServiceGroup[];
   }
   @media (max-width: 560px) {
     .header__cta, .header__phone { display: none; }
+    .header__inner { gap: 0.75rem; }
   }
 
   .mobile-menu {

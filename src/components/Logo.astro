@@ -44,4 +44,10 @@ const half = `<path d="M50 4C45 16 35 30 34.5 45C34 56 40 64 50 71"/><path d="M2
     color: var(--moss-500);
   }
   .logo--light .logo__sub { color: var(--moss-300); }
+  @media (max-width: 360px) {
+    .logo { gap: 0.45rem; }
+    .logo__mark { width: 34px; height: 34px; }
+    .logo__name { font-size: 1.02rem; letter-spacing: 0.06em; }
+    .logo__sub { font-size: 0.62rem; letter-spacing: 0.16em; }
+  }
 </style>

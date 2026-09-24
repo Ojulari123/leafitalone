@@ -271,6 +271,13 @@ h4 { font-size: 1.1rem; font-stretch: 95%; font-weight: 700; line-height: 1.2; }
 }
 .on-dark .text-link { color: var(--lime-400); text-decoration-color: rgba(206, 235, 76, 0.4); }
 
+/* Bigger hit areas on touch screens without changing the desktop layout */
+@media (pointer: coarse) {
+  .text-link { min-height: 44px; }
+  .footer a { min-height: 40px; }
+  .crumbs a { min-height: 44px; }
+}
+
 /* ------------------------------------------------------------------ Mowing stripes (signature) */
 .stripes {
   --stripe-a: var(--moss-600);
