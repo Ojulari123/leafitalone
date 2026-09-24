@@ -15,16 +15,20 @@ import { src } from '../data/photos';
     title="What our customers say"
     lede={`Rated ${site.rating.score} stars on Google from ${site.rating.count} reviews. Here are a few from Guelph homeowners.`}
     crumbs={[{ label: 'Reviews' }]}
-  />
-
-  <section class="section">
-    <div class="wrap rv">
-      <div class="rv__score" data-reveal>
+    variant="split"
+    tone="lime"
+  >
+      <div slot="media" class="rv__score on-dark">
         <p class="rv__big">{site.rating.score}</p>
         <span class="stars rv__stars" role="img" aria-label={`${site.rating.score} out of 5 stars`}>{[1,2,3,4,5].map(() => <Icon name="star" weight="fill" />)}</span>
         <p>Based on {site.rating.count} Google reviews</p>
         <a href={site.googleReviewUrl} class="btn btn--moss btn--sm" target="_blank" rel="noopener">Read them on Google<span class="btn__icon"><Icon name="arrow-up-right" weight="bold" /></span></a>
       </div>
+  </PageHero>
+
+  <section class="section">
+    <div class="wrap rv">
+
 
       <ul class="rv__list">
         {reviews.map((r, i) => (
@@ -62,8 +66,8 @@ import { src } from '../data/photos';
 </Base>
 
 <style>
-  .rv { display: grid; grid-template-columns: 300px 1fr; gap: clamp(2rem, 5vw, 4rem); align-items: start; }
-  .rv__score { position: sticky; top: calc(var(--header-h) + 24px); padding: 2rem; border-radius: 24px; background: var(--moss-600); color: var(--lime-100); text-align: center; display: grid; justify-items: center; gap: 0.5rem; }
+  .rv { display: block; }
+  .rv__score { margin-left: auto; width: min(100%, 340px); padding: 2rem; border-radius: 24px; background: var(--moss-600); color: var(--lime-100); text-align: center; display: grid; justify-items: center; gap: 0.5rem; }
   .rv__big { margin: 0; font-family: var(--font-display); font-stretch: 75%; font-weight: 800; font-size: 5.5rem; line-height: 0.9; color: var(--white); }
   .rv__stars :global(svg) { width: 24px; height: 24px; color: var(--lime-400); }
   .rv__score p:not(.rv__big) { margin: 0 0 0.75rem; }
@@ -78,8 +82,7 @@ import { src } from '../data/photos';
   .rv__list li:last-child { grid-column: 1 / -1; }
   .rv__photo img { width: 100%; aspect-ratio: 72 / 30; object-fit: cover; }
   @media (max-width: 860px) {
-    .rv { grid-template-columns: 1fr; }
-    .rv__score { position: static; }
+    .rv__score { margin-left: 0; }
     .rv__list { grid-template-columns: 1fr; }
   }
   .leave { display: flex; justify-content: space-between; align-items: center; gap: 2rem; flex-wrap: wrap; }

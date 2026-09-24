@@ -4,6 +4,7 @@ import { photos, src, srcset } from '../data/photos';
 interface Props { title?: string; ids?: string[] }
 const { title = 'Recent work around Guelph', ids } = Astro.props;
 const list = ids ? ids.map((id) => photos.find((p) => p.id === id)!) : photos.slice(0, 10);
+const total = photos.length;
 ---
 <section class="section work" data-carousel>
   <div class="wrap work__head">
@@ -12,7 +13,6 @@ const list = ids ? ids.map((id) => photos.find((p) => p.id === id)!) : photos.sl
       <p class="lede">Real jobs by our crew. No stock photos.</p>
     </div>
     <div class="work__controls">
-      <a href="/projects" class="text-link">See all projects <Icon name="arrow-right" /></a>
       <button class="work__btn" data-prev aria-label="Previous photos"><Icon name="arrow-left" /></button>
       <button class="work__btn" data-next aria-label="Next photos"><Icon name="arrow-right" /></button>
     </div>
@@ -28,6 +28,13 @@ const list = ids ? ids.map((id) => photos.find((p) => p.id === id)!) : photos.sl
         </a>
       </li>
     ))}
+    <li class="work__item work__item--all">
+      <a href="/projects" class="work__all">
+        <span class="work__all-num">{total}</span>
+        <span class="work__all-label">real jobs in the gallery</span>
+        <span class="text-link">See all projects <Icon name="arrow-right" /></span>
+      </a>
+    </li>
   </ul>
 </section>
 
@@ -37,7 +44,6 @@ const list = ids ? ids.map((id) => photos.find((p) => p.id === id)!) : photos.sl
   .work__head h2 { margin-bottom: 0.3em; }
   .work__head .lede { margin: 0; }
   .work__controls { display: flex; align-items: center; gap: 0.6rem; }
-  .work__controls .text-link { margin-right: 0.75rem; }
   .work__btn {
     display: grid; place-items: center; width: 44px; height: 44px; padding: 0;
     border: 0; background: none; color: var(--moss-700); cursor: pointer;
@@ -69,6 +75,16 @@ const list = ids ? ids.map((id) => photos.find((p) => p.id === id)!) : photos.sl
   .work__photo img { transition: transform 400ms var(--ease-out); }
   @media (hover: hover) and (pointer: fine) { .work__link:hover .work__photo img { transform: scale(1.03); } }
   .work__caption { display: block; margin-top: 0.75rem; font-weight: 600; }
+  .work__all {
+    display: flex; flex-direction: column; justify-content: flex-end; gap: 0.35rem;
+    aspect-ratio: 21 / 26; padding: 1.75rem; border-radius: var(--r-card);
+    background: var(--moss-600); color: var(--lime-100); text-decoration: none;
+    transition: background-color 200ms ease;
+  }
+  .work__all:hover { background: var(--moss-700); }
+  .work__all-num { font-family: var(--font-display); font-stretch: 75%; font-weight: 800; font-size: 5rem; line-height: 0.9; color: var(--white); }
+  .work__all-label { margin-bottom: 1rem; }
+  .work__all .text-link { color: var(--lime-400); text-decoration-color: rgba(206, 235, 76, 0.45); }
   @media (max-width: 640px) {
     .work__item { flex-basis: 76vw; }
     .work__btn { display: none; }

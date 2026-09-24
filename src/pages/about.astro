@@ -23,18 +23,19 @@ const promises = [
     title="Run by Josh, based in Guelph"
     lede="Leaf It Alone is a locally owned Guelph business run by Josh. The idea is in the name: leave the yard work to us."
     crumbs={[{ label: 'About' }]}
-  />
+    variant="split"
+    tone="paper"
+  >
+    <div slot="media" class="frame about__frame">
+      <div class="photo about__photo">
+        <!-- TODO: replace with a photo of Josh on a job or with the truck -->
+        <img src={src('db3d51_083fce0f7b174aefbec05c059e6654a9', 760, 620)} srcset={srcset('db3d51_083fce0f7b174aefbec05c059e6654a9', 760, 620)} sizes="(max-width: 900px) 92vw, 520px" alt="Front of a brick house with shrubs in fresh black mulch beds, maintained by Leaf It Alone" width="760" height="620" />
+      </div>
+    </div>
+  </PageHero>
 
   <section class="section">
     <div class="wrap story">
-      <div class="story__media" data-reveal>
-        <div class="frame">
-          <div class="photo story__photo">
-            <!-- TODO: replace with a photo of Josh on a job or with the truck -->
-            <img src={src('db3d51_083fce0f7b174aefbec05c059e6654a9', 700, 800)} srcset={srcset('db3d51_083fce0f7b174aefbec05c059e6654a9', 700, 800)} sizes="(max-width: 860px) 92vw, 480px" alt="Front of a brick house with shrubs in fresh black mulch beds, maintained by Leaf It Alone" loading="lazy" width="700" height="800" />
-          </div>
-        </div>
-      </div>
       <div class="story__copy">
         <h2>Why Josh started Leaf It Alone</h2>
         <p class="lede">You deal with Josh directly, from the quote to the cleanup.</p>
@@ -84,13 +85,18 @@ const promises = [
 </Base>
 
 <style>
-  .story { display: grid; grid-template-columns: 0.85fr 1.15fr; gap: clamp(2rem, 6vw, 5rem); align-items: center; }
-  .story__photo { aspect-ratio: 7 / 8; }
+  .story__copy { display: grid; grid-template-columns: 0.9fr 1.1fr; column-gap: clamp(2rem, 6vw, 5rem); }
+  .story__copy > h2, .story__copy > .lede { grid-column: 1; }
+  .story__copy > p:not(.lede), .story__copy > .facts { grid-column: 2; }
+  .story__copy > h2 { grid-row: 1; }
+  .story__copy > .lede { grid-row: 2; align-self: start; }
+  .story__copy > p:nth-of-type(2) { grid-row: 1; }
+  .about__photo { aspect-ratio: 76 / 62; }
   .story__copy p:not(.lede) { max-width: 60ch; }
   .facts { list-style: none; display: flex; gap: 2.5rem; margin-top: 2rem; padding-top: 1.5rem; border-top: 1px solid var(--line); }
   .facts strong { display: block; font-family: var(--font-display); font-stretch: 78%; font-weight: 800; font-size: 2.6rem; line-height: 1; color: var(--moss-600); }
   .facts span { font-size: 0.92rem; color: var(--ink-soft); }
-  @media (max-width: 860px) { .story { grid-template-columns: 1fr; } .story__media { max-width: 480px; } }
+  @media (max-width: 860px) { .story__copy { display: block; } }
 
   .promises { list-style: none; display: grid; grid-template-columns: repeat(4, 1fr); gap: 1rem; }
   .promises li { padding: 1.75rem; border-radius: 22px; background: var(--white); border: 1px solid var(--line); }

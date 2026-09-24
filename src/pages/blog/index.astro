@@ -10,7 +10,7 @@ const posts = (await getCollection('blog')).sort((a, b) => b.data.pubDate.valueO
 const [first, ...rest] = posts;
 ---
 <Base title="Lawn Care & Landscaping Tips | Leaf It Alone Blog, Guelph" description="Practical lawn, garden and landscaping advice for Guelph homeowners: sod care, overseeding, fall landscaping, levelling a lawn and more.">
-  <PageHero title="Yard tips from a Guelph crew" lede="Practical advice on lawns, sod, beds and seasonal care, written for Guelph yards and weather." crumbs={[{ label: 'Blog' }]} />
+  <PageHero title="Yard tips from a Guelph crew" lede="Practical advice on lawns, sod, beds and seasonal care, written for Guelph yards and weather." crumbs={[{ label: 'Blog' }]} tone="paper" />
   <section class="section">
     <div class="wrap">
       <a href={`/post/${first.id}`} class="feat" data-reveal>

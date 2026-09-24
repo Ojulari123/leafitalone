@@ -15,7 +15,14 @@ const slug = (t: string) => t.toLowerCase().replace(/[^a-z]+/g, '-').replace(/(^
   title="Lawn Care & Landscaping FAQ | Leaf It Alone, Guelph"
   description="Answers to common questions about Leaf It Alone: quotes and pricing, scheduling, rain days, yard waste, service areas and more."
 >
-  <PageHero title="Questions, answered" lede="Quick answers about quotes, pricing and how we work. Still wondering about something? Just ask Josh." crumbs={[{ label: 'FAQ' }]} />
+  <PageHero title="Questions, answered" lede="Quick answers about quotes, pricing and how we work. Still wondering about something? Just ask Josh." crumbs={[{ label: 'FAQ' }]}>
+    <div class="fsearch">
+      <label for="faq-search" class="visually-hidden">Search the questions</label>
+      <Icon name="magnifying-glass" />
+      <input id="faq-search" type="search" placeholder="Search, e.g. rain, price, yard waste" autocomplete="off" data-faq-search />
+    </div>
+    <p class="fsearch__status" aria-live="polite" data-faq-status></p>
+  </PageHero>
 
   <section class="section">
     <div class="wrap faqpage">
@@ -32,6 +39,7 @@ const slug = (t: string) => t.toLowerCase().replace(/[^a-z]+/g, '-').replace(/(^
         </div>
       </nav>
       <div class="faqpage__body">
+        <p class="faqpage__empty" data-faq-empty hidden>No questions match that. Try another word, or <a href="/contact">ask Josh directly</a>.</p>
         {generalFaqs.map((g) => (
           <div id={slug(g.topic)} class="faqpage__group">
             <h2>{g.topic}</h2>
@@ -53,6 +61,16 @@ const slug = (t: string) => t.toLowerCase().replace(/[^a-z]+/g, '-').replace(/(^
 </Base>
 
 <style>
+  .fsearch { position: relative; max-width: 34rem; margin-top: 1.75rem; }
+  .fsearch :global(svg) { position: absolute; left: 1.1rem; top: 50%; width: 20px; height: 20px; margin-top: -10px; color: var(--moss-600); pointer-events: none; }
+  .fsearch input {
+    width: 100%; min-height: 56px; padding: 0.8rem 1rem 0.8rem 3rem; border-radius: var(--r-pill);
+    border: 1.5px solid var(--line-input); background: var(--white); font-size: 1.05rem;
+  }
+  .fsearch input:focus { outline: 3px solid var(--moss-600); outline-offset: 2px; border-color: var(--moss-600); }
+  .fsearch__status { margin: 0.6rem 0 0 1.1rem; min-height: 1.4em; font-size: 0.92rem; color: var(--ink-soft); }
+  .faqpage__empty { padding: 1.25rem; border-radius: 16px; background: var(--lime-100); }
+  .faqpage__empty a { color: var(--moss-600); font-weight: 700; }
   .faqpage { display: grid; grid-template-columns: 240px 1fr; gap: clamp(2rem, 5vw, 4rem); align-items: start; }
   .faqpage__toc { position: sticky; top: calc(var(--header-h) + 24px); }
   .faqpage__label { font-weight: 700; font-size: 0.85rem; color: var(--moss-500); margin-bottom: 0.5rem; }
@@ -66,3 +84,29 @@ const slug = (t: string) => t.toLowerCase().replace(/[^a-z]+/g, '-').replace(/(^
   .faqpage__svc { list-style: none; display: flex; flex-wrap: wrap; gap: 0.5rem; }
   @media (max-width: 860px) { .faqpage { grid-template-columns: 1fr; } .faqpage__toc { position: static; } }
 </style>
+
+<script>
+  const input = document.querySelector<HTMLInputElement>('[data-faq-search]')!;
+  const status = document.querySelector<HTMLElement>('[data-faq-status]')!;
+  const empty = document.querySelector<HTMLElement>('[data-faq-empty]')!;
+  const groups = [...document.querySelectorAll<HTMLElement>('.faqpage__group')].filter((g) => g.id !== 'services');
+  input.addEventListener('input', () => {
+    const q = input.value.trim().toLowerCase();
+    // Match the start of words, so "rain" finds rain but not terrain
+    const re = new RegExp(`\\b${q.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}`, 'i');
+    let shown = 0;
+    groups.forEach((g) => {
+      let inGroup = 0;
+      g.querySelectorAll<HTMLDetailsElement>('details').forEach((d) => {
+        const hit = !q || re.test(d.textContent!);
+        d.hidden = !hit;
+        d.open = !!q && hit;
+        if (hit) inGroup++;
+      });
+      g.hidden = inGroup === 0;
+      shown += inGroup;
+    });
+    empty.hidden = shown > 0;
+    status.textContent = q ? `${shown} question${shown === 1 ? '' : 's'} found` : '';
+  });
+</script>

@@ -1,61 +1,108 @@
 ---
+// Page header with a few looks so pages don't all share one banner:
+//  stripes: mowed-lawn stripes (services overview, 404, thank-you)
+//  photo:   a job photo behind the title (service pages)
+//  light:   plain paper/mist/lime band (text-first pages)
+//  split:   light band with a media slot on the right (map, rating, photos)
 import Icon from './Icon.astro';
 import { site } from '../data/site';
+import { src } from '../data/photos';
+
 interface Crumb { label: string; href?: string }
-interface Props { title: string; lede?: string; crumbs?: Crumb[]; cta?: boolean; highlight?: string }
-const { title, lede, crumbs = [], cta = false, highlight } = Astro.props;
+interface Props {
+  title: string;
+  lede?: string;
+  crumbs?: Crumb[];
+  cta?: boolean;
+  highlight?: string;
+  variant?: 'stripes' | 'photo' | 'light' | 'split';
+  photo?: string;
+  tone?: 'paper' | 'mist' | 'lime';
+}
+const { title, lede, crumbs = [], cta = false, highlight, variant = 'light', photo, tone = 'mist' } = Astro.props;
+const dark = variant === 'stripes' || variant === 'photo';
 const all = [{ label: 'Home', href: '/' }, ...crumbs];
-// Wrap one word of the title in the lime mark, if requested
 const parts = highlight && title.includes(highlight) ? title.split(highlight) : null;
+const hasMedia = variant === 'split' && Astro.slots.has('media');
 const schema = {
   '@context': 'https://schema.org',
   '@type': 'BreadcrumbList',
   itemListElement: all.map((c, i) => ({ '@type': 'ListItem', position: i + 1, name: c.label, item: c.href ? new URL(c.href, site.url).href : undefined })),
 };
 ---
-<section class="phero stripes on-dark">
-  <div class="phero__shade" aria-hidden="true"></div>
-  <div class="wrap phero__inner">
-    {crumbs.length > 0 && (
-      <nav aria-label="Breadcrumb" class="crumbs">
-        <ol>
-          {all.map((c, i) => (
-            <li>
-              {c.href && i < all.length - 1 ? <a href={c.href}>{c.label}</a> : <span aria-current="page">{c.label}</span>}
-              {i < all.length - 1 && <Icon name="caret-right" />}
-            </li>
-          ))}
-        </ol>
-      </nav>
-    )}
-    <h1>{parts ? <>{parts[0]}<span class="mark">{highlight}</span>{parts[1]}</> : title}</h1>
-    {lede && <p class="lede">{lede}</p>}
-    <slot />
-    {cta && (
-      <div class="btn-row">
-        <a href="/contact" class="btn">Get a free quote<span class="btn__icon"><Icon name="arrow-right" weight="bold" /></span></a>
-        <a href={site.phoneHref} class="btn btn--ghost"><Icon name="phone" />Call {site.phone}</a>
-      </div>
-    )}
+<section class:list={['phero', `phero--${variant}`, `phero--${tone}`, { 'on-dark': dark, stripes: variant === 'stripes' }]}>
+  {variant === 'photo' && photo && (
+    <img class="phero__bg" src={src(photo, 1600, 900)} alt="" width="1600" height="900" fetchpriority="high" />
+  )}
+  {dark && <div class="phero__shade" aria-hidden="true"></div>}
+  <div class:list={['wrap', 'phero__inner', { 'phero__inner--split': hasMedia }]}>
+    <div class="phero__copy">
+      {crumbs.length > 0 && (
+        <nav aria-label="Breadcrumb" class="crumbs">
+          <ol>
+            {all.map((c, i) => (
+              <li>
+                {c.href && i < all.length - 1 ? <a href={c.href}>{c.label}</a> : <span aria-current="page">{c.label}</span>}
+                {i < all.length - 1 && <Icon name="caret-right" />}
+              </li>
+            ))}
+          </ol>
+        </nav>
+      )}
+      <h1>{parts ? <>{parts[0]}<span class="mark">{highlight}</span>{parts[1]}</> : title}</h1>
+      {lede && <p class="lede">{lede}</p>}
+      <slot />
+      {cta && (
+        <div class="btn-row">
+          <a href="/contact" class="btn">Get a free quote<span class="btn__icon"><Icon name="arrow-right" weight="bold" /></span></a>
+          <a href={site.phoneHref} class="btn btn--ghost"><Icon name="phone" />Call {site.phone}</a>
+        </div>
+      )}
+    </div>
+    {hasMedia && <div class="phero__media"><slot name="media" /></div>}
   </div>
   <script type="application/ld+json" set:html={JSON.stringify(schema)} />
 </section>
 
 <style>
-  .phero { position: relative; color: var(--lime-100); padding-block: clamp(2.5rem, 6vw, 4.5rem); overflow: hidden; }
-  .phero__shade { position: absolute; inset: 0; background: linear-gradient(90deg, rgba(21, 30, 18, 0.55), rgba(21, 30, 18, 0.15)); }
+  .phero { position: relative; overflow: hidden; padding-block: clamp(2.5rem, 6vw, 4.5rem); }
   .phero__inner { position: relative; }
-  .phero h1 { color: var(--white); max-width: 18ch; margin-bottom: 0.35em; }
+  .phero__inner--split { display: grid; grid-template-columns: 1.05fr 0.95fr; gap: clamp(2rem, 5vw, 4rem); align-items: center; }
+  .phero h1 { max-width: 18ch; margin-bottom: 0.35em; }
   .phero .lede { max-width: 42rem; margin-bottom: 0; }
   .phero .btn-row { margin-top: 2rem; }
+
+  /* Dark looks */
+  .phero.on-dark { color: var(--lime-100); }
+  .phero.on-dark h1 { color: var(--white); }
+  .phero__shade { position: absolute; inset: 0; background: linear-gradient(90deg, rgba(21, 30, 18, 0.55), rgba(21, 30, 18, 0.15)); }
+  .phero--photo { padding-block: clamp(3.5rem, 8vw, 6rem); background: var(--moss-900); }
+  .phero__bg { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+  .phero--photo .phero__shade { background: linear-gradient(90deg, rgba(21, 30, 18, 0.9) 0%, rgba(21, 30, 18, 0.68) 50%, rgba(21, 30, 18, 0.3) 100%); }
+
+  /* Light looks */
+  .phero--light, .phero--split { border-bottom: 1px solid var(--line); }
+  .phero--paper { background: var(--paper); }
+  .phero--mist { background: var(--mist); }
+  .phero--lime { background: var(--lime-200); }
+  .phero--light .lede, .phero--split .lede { color: var(--ink-soft); }
+  .phero--lime .lede { color: var(--moss-800); }
+  .phero--light { padding-block: clamp(2.25rem, 5vw, 3.5rem); }
+
   .crumbs ol { list-style: none; display: flex; flex-wrap: wrap; align-items: center; gap: 0.35rem; margin-bottom: 1.25rem; font-size: 0.92rem; }
   .crumbs li { display: inline-flex; align-items: center; gap: 0.35rem; }
-  .crumbs a { color: rgba(244, 250, 217, 0.8); text-decoration: none; }
-  .crumbs a:hover { color: var(--lime-400); text-decoration: underline; }
-  .crumbs span { color: var(--lime-400); font-weight: 600; }
+  .crumbs a { color: var(--ink-soft); text-decoration: none; }
+  .crumbs a:hover { color: var(--moss-600); text-decoration: underline; }
+  .crumbs span { color: var(--moss-600); font-weight: 700; }
+  .on-dark .crumbs a { color: rgba(244, 250, 217, 0.8); }
+  .on-dark .crumbs a:hover { color: var(--lime-400); }
+  .on-dark .crumbs span { color: var(--lime-400); }
   .crumbs :global(svg) { width: 12px; height: 12px; opacity: 0.6; }
+
+  @media (max-width: 900px) { .phero__inner--split { grid-template-columns: 1fr; } }
   @media (prefers-reduced-motion: no-preference) {
-    .phero__inner > * { animation: up 400ms var(--ease-out) both; }
+    .phero__copy > * { animation: up 400ms var(--ease-out) both; }
+    .phero__media { animation: up 500ms var(--ease-out) 80ms both; }
   }
   @keyframes up { from { opacity: 0; transform: translateY(8px); } }
 </style>

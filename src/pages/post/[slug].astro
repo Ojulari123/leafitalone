@@ -28,7 +28,7 @@ const schema = [{
 }];
 ---
 <Base title={`${post.data.title} | Leaf It Alone`} description={post.data.description} image={post.data.photo} schema={schema} ogType="article" published={post.data.pubDate}>
-  <PageHero title={post.data.title} crumbs={[{ label: 'Blog', href: '/blog' }, { label: 'Article' }]}>
+  <PageHero title={post.data.title} crumbs={[{ label: 'Blog', href: '/blog' }, { label: 'Article' }]} tone="paper">
     <p class="phmeta">{post.data.readMinutes} min read · By the Leaf It Alone crew</p>
   </PageHero>
   <section class="section">
@@ -68,7 +68,7 @@ const schema = [{
   <CtaBand />
 </Base>
 <style>
-  .phmeta { margin: 0; color: rgba(244, 250, 217, 0.8); font-weight: 600; }
+  .phmeta { margin: 0; color: var(--ink-soft); font-weight: 600; }
   .article { display: grid; grid-template-columns: minmax(0, 1fr) 300px; gap: clamp(2rem, 5vw, 4rem); align-items: start; }
   .article__photo { aspect-ratio: 110 / 62; margin-bottom: 2.5rem; }
   .article__aside { position: sticky; top: calc(var(--header-h) + 24px); display: grid; gap: 1rem; }

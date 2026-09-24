@@ -43,13 +43,37 @@ export const photos: Photo[] = [
   { id: 'db3d51_f3552fe1348f42a6b38cd21e94e824bb', category: 'lawn', caption: 'Fenced backyard lawn', alt: 'Even green lawn in a fenced backyard with trees behind the fence' },
 ];
 
-/** Wix CDN transform URL. `w`/`h` crop with center fill. */
-export function src(id: string, w: number, h: number, q = 80) {
-  return `https://static.wixstatic.com/media/${id}~mv2.jpg/v1/fill/w_${w},h_${h},al_c,q_${q},enc_auto/${id}.jpg`;
+// Original upload sizes on Wix. Most were uploaded at 960x720, so never ask the CDN for more
+// than this (it would upscale and look soft). Replace with full-size originals when Josh sends them.
+const ORIGINAL: Record<string, [number, number]> = {
+  'db3d51_60094484192149479320c4d4e38f9a4e': [1500, 2000],
+  'db3d51_731d844539df4a769e6535a39d9b0381': [1500, 2000],
+  'db3d51_c20fb5716bd84f1c80cc468c870a7c2d': [1500, 2000],
+  'db3d51_f3552fe1348f42a6b38cd21e94e824bb': [1500, 2000],
+  'db3d51_d236f289a4ef4057b39fa62f25d9b3dc': [720, 960],
+};
+const originalSize = (id: string): [number, number] => ORIGINAL[id] ?? [960, 720];
+
+/** Largest crop of this aspect ratio that fits inside the original, capped at the requested size. */
+function fit(id: string, w: number, h: number): [number, number] {
+  const [ow, oh] = originalSize(id);
+  const f = Math.min(1, ow / w, oh / h);
+  return [Math.round(w * f), Math.round(h * f)];
+}
+
+/** Wix CDN transform URL: centre-crop fill, sharpened, never upscaled. */
+export function src(id: string, w: number, h: number, q = 90) {
+  const [fw, fh] = fit(id, w, h);
+  return `https://static.wixstatic.com/media/${id}~mv2.jpg/v1/fill/w_${fw},h_${fh},al_c,q_${q},usm_0.66_1.00_0.01,enc_auto/${id}.jpg`;
 }
 
 export function srcset(id: string, w: number, h: number) {
-  return [1, 1.5, 2].map((m) => `${src(id, Math.round(w * m), Math.round(h * m))} ${Math.round(w * m)}w`).join(', ');
+  const seen = new Set<number>();
+  return [1, 1.5, 2]
+    .map((m) => fit(id, Math.round(w * m), Math.round(h * m)))
+    .filter(([fw]) => (seen.has(fw) ? false : (seen.add(fw), true)))
+    .map(([fw, fh]) => `${src(id, fw, fh)} ${fw}w`)
+    .join(', ');
 }
 
 export const photoById = (id: string) => photos.find((p) => p.id === id)!;

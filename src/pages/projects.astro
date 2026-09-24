@@ -3,7 +3,8 @@ import Base from '../layouts/Base.astro';
 import PageHero from '../components/PageHero.astro';
 import Gallery from '../components/Gallery.astro';
 import CtaBand from '../components/CtaBand.astro';
-import { photos } from '../data/photos';
+import { photos, src } from '../data/photos';
+const collage = ['db3d51_c20fb5716bd84f1c80cc468c870a7c2d', 'db3d51_2958b7b850514d60b2e55e8bfa548668', 'db3d51_5e67f837c2fc422b824b8f9f58a7cec9'];
 ---
 <Base
   title="Landscaping Projects in Guelph | Mulch, Sod & Stone | Leaf It Alone"
@@ -14,7 +15,13 @@ import { photos } from '../data/photos';
     title="Our work around Guelph"
     lede="Every photo here is a real Leaf It Alone job. Filter by type of work, then tap any photo to see it full size."
     crumbs={[{ label: 'Projects' }]}
-  />
+    variant="split"
+    tone="paper"
+  >
+    <div slot="media" class="collage" aria-hidden="true">
+      {collage.map((id, i) => <img src={src(id, i === 0 ? 700 : 480, i === 0 ? 900 : 420)} alt="" class={`collage__${i}`} width={i === 0 ? 700 : 480} height={i === 0 ? 900 : 420} />)}
+    </div>
+  </PageHero>
   <section class="section">
     <div class="wrap">
       <Gallery items={photos} filters />
@@ -22,3 +29,10 @@ import { photos } from '../data/photos';
   </section>
   <CtaBand title="Want your yard to look like this?" picks={['mulch-installation-guelph', 'stone-installation-guelph', 'sod-installation-guelph', 'spring-cleanup-guelph']} />
 </Base>
+
+<style>
+  .collage { display: grid; grid-template-columns: 1.1fr 1fr; grid-template-rows: 1fr 1fr; gap: 0.75rem; height: clamp(300px, 34vw, 440px); }
+  .collage img { width: 100%; height: 100%; object-fit: cover; border-radius: 18px; box-shadow: var(--shadow-md); }
+  .collage__0 { grid-row: 1 / 3; }
+  @media (max-width: 640px) { .collage { height: 220px; } }
+</style>

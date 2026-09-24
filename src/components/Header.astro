@@ -146,9 +146,9 @@ const groups = Object.keys(groupLabels) as ServiceGroup[];
   .nav__list { list-style: none; display: flex; align-items: center; gap: 0.15rem; }
   .nav__item { position: relative; display: flex; align-items: center; }
   .nav__link {
+    position: relative;
     display: block;
     padding: 0.5rem 0.7rem;
-    border-radius: var(--r-pill);
     font-weight: 600;
     font-size: 0.98rem;
     text-decoration: none;
@@ -156,8 +156,17 @@ const groups = Object.keys(groupLabels) as ServiceGroup[];
     color: var(--ink);
     transition: background-color 160ms ease;
   }
-  .nav__link:hover { background: var(--mist); }
-  .nav__link.is-active { background: var(--lime-200); }
+  /* Underline grows from the left on hover; the current page keeps a lime bar */
+  .nav__link::after {
+    content: ''; position: absolute; left: 0.7rem; right: 0.7rem; bottom: 0.2rem; height: 2px; border-radius: 2px;
+    background: var(--moss-600); transform: scaleX(0); transform-origin: left center;
+    transition: transform 220ms var(--ease-out);
+  }
+  .nav__item--mega .nav__link::after { right: 0.3rem; }
+  .nav__link:hover { color: var(--moss-700); }
+  .nav__link:hover::after, .nav__item--mega.is-open .nav__link::after { transform: scaleX(1); }
+  .nav__link.is-active { color: var(--moss-700); }
+  .nav__link.is-active::after { transform: scaleX(1); height: 3px; background: var(--lime-400); }
   .nav__item--mega .nav__link { padding-right: 0.3rem; }
   .nav__toggle {
     display: grid; place-items: center;

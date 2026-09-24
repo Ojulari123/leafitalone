@@ -12,11 +12,12 @@ import { neighbourhoods } from '../data/areas';
 
 // Hero slideshow: real Leaf It Alone jobs
 const slides = [
-  { id: 'db3d51_2958b7b850514d60b2e55e8bfa548668', caption: 'River rock and black mulch garden' },
-  { id: 'db3d51_5e67f837c2fc422b824b8f9f58a7cec9', caption: 'Raised bed with armour stone edging' },
-  { id: 'db3d51_083fce0f7b174aefbec05c059e6654a9', caption: 'Front beds in fresh black mulch' },
+  // Higher-resolution uploads first (1500px). The 960px ones sit behind the darker side of the overlay.
   { id: 'db3d51_c20fb5716bd84f1c80cc468c870a7c2d', caption: 'Flagstone patio' },
-  { id: 'db3d51_2e9cd6e6a9cc444793bfc6b8da56561d', caption: 'Curved front bed with a clean edge' },
+  { id: 'db3d51_2958b7b850514d60b2e55e8bfa548668', caption: 'River rock and black mulch garden' },
+  { id: 'db3d51_731d844539df4a769e6535a39d9b0381', caption: 'Backyard lawn by the shed' },
+  { id: 'db3d51_5e67f837c2fc422b824b8f9f58a7cec9', caption: 'Raised bed with armour stone edging' },
+  { id: 'db3d51_f3552fe1348f42a6b38cd21e94e824bb', caption: 'Fenced backyard lawn' },
 ].map((sl) => ({ ...sl, alt: photos.find((p) => p.id === sl.id)!.alt }));
 const lawnId = 'db3d51_f3552fe1348f42a6b38cd21e94e824bb';
 const reasons = [
@@ -36,11 +37,9 @@ const lorna = reviews[0];
   <section class="hero on-dark" data-hero>
     <div class="hero__slides">
       {slides.map((sl, i) => (
-        <figure class:list={['hero__slide', { 'is-active': i === 0 }]} style={`--dx:${i % 2 ? '-1.5%' : '1.5%'}`} data-slide data-caption={sl.caption}>
+        <figure class:list={['hero__slide', { 'is-active': i === 0 }]} data-slide data-caption={sl.caption}>
           <img
-            src={src(sl.id, 1920, 1200, 82)}
-            srcset={`${src(sl.id, 960, 720, 80)} 960w, ${src(sl.id, 1440, 960, 80)} 1440w, ${src(sl.id, 1920, 1200, 82)} 1920w`}
-            sizes="100vw"
+            src={src(sl.id, 1600, 1000)}
             alt={sl.alt}
             width="1920" height="1200"
             loading={i === 0 ? 'eager' : 'lazy'}
@@ -287,8 +286,8 @@ const lorna = reviews[0];
   .hero__slide img { width: 100%; height: 100%; object-fit: cover; }
   @media (prefers-reduced-motion: no-preference) {
     /* Slow push-in on the photo that is showing */
-    .hero__slide img { transform: scale(1.08); transition: transform 7000ms cubic-bezier(0.2, 0, 0.3, 1); }
-    .hero__slide.is-active img { transform: scale(1) translateX(var(--dx)); }
+    .hero__slide img { transform: scale(1.04); transition: transform 7000ms cubic-bezier(0.2, 0, 0.3, 1); }
+    .hero__slide.is-active img { transform: scale(1); }
     .hero__copy > * { animation: rise 600ms var(--ease-out) both; }
     .hero__copy > :nth-child(2) { animation-delay: 80ms; }
     .hero__copy > :nth-child(3) { animation-delay: 160ms; }

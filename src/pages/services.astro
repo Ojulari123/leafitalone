@@ -17,6 +17,7 @@ const groupIcons: Record<ServiceGroup, string> = { lawn: 'rows', cleanups: 'leaf
     title="Services for every season"
     lede="Eleven services. Pick one, or pick a few and we will do them on the same visit."
     crumbs={[{ label: 'Services' }]}
+    variant="stripes"
   >
     <ul class="jump">
       {groups.map((g) => <li><a href={`#${g}`} class="jump__link">{groupLabels[g].name}</a></li>)}
@@ -69,14 +70,13 @@ const groupIcons: Record<ServiceGroup, string> = { lawn: 'rows', cleanups: 'leaf
 </Base>
 
 <style>
-  .jump { list-style: none; display: flex; flex-wrap: wrap; gap: 0.5rem; margin-top: 2rem; }
+  .jump { list-style: none; display: flex; flex-wrap: wrap; gap: 0.5rem 2rem; margin-top: 2rem; }
   .jump__link {
-    display: inline-flex; align-items: center; gap: 0.5rem; padding: 0.6rem 1rem; border-radius: var(--r-pill);
-    background: rgba(244, 250, 217, 0.1); border: 1px solid rgba(244, 250, 217, 0.22); color: var(--lime-100);
-    font-weight: 700; text-decoration: none; transition: background-color 160ms ease, border-color 160ms ease;
+    color: var(--white); font-weight: 700; text-decoration: underline;
+    text-decoration-color: rgba(206, 235, 76, 0.6); text-decoration-thickness: 2px; text-underline-offset: 6px;
+    transition: color 160ms ease, text-decoration-color 160ms ease;
   }
-  .jump__link :global(svg) { width: 18px; height: 18px; color: var(--lime-400); }
-  .jump__link:hover { background: rgba(206, 235, 76, 0.16); border-color: var(--lime-400); }
+  .jump__link:hover { color: var(--lime-400); text-decoration-color: var(--lime-400); }
 
   .group__head { display: flex; gap: 1.25rem; align-items: flex-start; margin-bottom: 2rem; }
   .group__head h2 { margin-bottom: 0.2em; }

@@ -20,9 +20,12 @@ const count = (c: PhotoCategory) => items.filter((p) => p.category === c).length
       <li data-cat={p.category} class:list={['gallery__item', { 'gallery__item--tall': i % 5 === 0 }]}>
         <button class="gallery__btn" data-index={i} data-full={src(p.id, 1600, 1200, 85)} data-caption={p.caption} data-alt={p.alt} aria-label={`Enlarge photo: ${p.caption}`}>
           <img src={src(p.id, 600, i % 5 === 0 ? 800 : 450)} srcset={srcset(p.id, 600, i % 5 === 0 ? 800 : 450)} sizes="(max-width: 640px) 92vw, (max-width: 1023px) 46vw, 400px" alt={p.alt} loading={i < 6 ? 'eager' : 'lazy'} width="600" height={i % 5 === 0 ? 800 : 450} />
+          <span class="gallery__cap" aria-hidden="true">
+            <span class="gallery__cat">{categoryLabels[p.category]}</span>
+            <span class="gallery__title">{p.caption}</span>
+          </span>
           <span class="gallery__zoom" aria-hidden="true"><Icon name="arrows-out" /></span>
         </button>
-        <p class="gallery__cap">{p.caption}</p>
       </li>
     ))}
   </ul>
@@ -52,7 +55,7 @@ const count = (c: PhotoCategory) => items.filter((p) => p.category === c).length
   .gallery__filters button[aria-pressed='true'] span { background: var(--lime-400); color: var(--moss-950); }
 
   .gallery__grid { list-style: none; columns: 3 300px; column-gap: 1rem; }
-  .gallery__item { break-inside: avoid; margin-bottom: 1.25rem; }
+  .gallery__item { break-inside: avoid; margin-bottom: 1rem; }
   .gallery__item[hidden] { display: none; }
   .gallery__btn { position: relative; display: block; width: 100%; padding: 0; border: 0; border-radius: var(--r-card); overflow: hidden; cursor: zoom-in; background: var(--mist-2); }
   .gallery__btn img { width: 100%; transition: transform 400ms var(--ease-out); }
@@ -67,7 +70,19 @@ const count = (c: PhotoCategory) => items.filter((p) => p.category === c).length
     .gallery__btn:hover .gallery__zoom { opacity: 1; transform: none; }
   }
   .gallery__btn:focus-visible .gallery__zoom { opacity: 1; transform: none; }
-  .gallery__cap { margin: 0.6rem 0 0; font-weight: 600; font-size: 0.95rem; }
+  /* Caption sits on the photo: always readable on touch, revealed on hover with a mouse */
+  .gallery__cap {
+    position: absolute; left: 0; right: 0; bottom: 0; display: grid; gap: 0.1rem; text-align: left;
+    padding: 2.5rem 1rem 0.9rem; background: linear-gradient(180deg, transparent, rgba(21, 30, 18, 0.82));
+    color: var(--white); pointer-events: none;
+  }
+  .gallery__cat { font-size: 0.75rem; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; color: var(--lime-400); }
+  .gallery__title { font-family: var(--font-display); font-stretch: 92%; font-weight: 700; font-size: 1.05rem; line-height: 1.2; }
+  @media (hover: hover) and (pointer: fine) {
+    .gallery__cap { opacity: 0; transform: translateY(6px); transition: opacity 220ms ease, transform 220ms var(--ease-out); }
+    .gallery__btn:hover .gallery__cap, .gallery__btn:focus-visible .gallery__cap { opacity: 1; transform: none; }
+  }
+  .gallery__zoom { top: 0.75rem; bottom: auto; }
 
   .lightbox {
     width: min(1100px, 94vw); max-height: 92vh; padding: 0; border: 0; border-radius: 20px;

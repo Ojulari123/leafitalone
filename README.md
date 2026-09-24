@@ -70,6 +70,7 @@ Taken from the current site (safe): mowing from $55/visit, weed control from $50
 
 ## Launch checklist
 
+- [ ] **Ask Josh for the original phone photos.** Most of the copies on Wix were uploaded at only 960×720, which is why large images (like the home slideshow) look a little soft. The site never asks for more than the original size, so higher-resolution photos will sharpen everything automatically once `ORIGINAL` in `src/data/photos.ts` is updated.
 - [ ] Export the original job photos from the Wix Media Manager into `public/photos/` and change `src()` in `src/data/photos.ts` to local paths. The site currently loads them from Wix's CDN, which will stop working if the Wix site is deleted.
 - [ ] Migrate the 16 remaining Wix blog posts into `src/content/blog/` and remove their lines from `public/_redirects`
 - [ ] Update the website link on the Google Business Profile, and make its services match these pages
