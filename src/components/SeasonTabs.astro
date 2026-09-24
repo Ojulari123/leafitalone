@@ -27,12 +27,12 @@ const bySeason = (k: Key) => (k === 'winter' ? services.filter((s) => s.slug ===
     {keys.map((k) => (
       <div role="tabpanel" id={`panel-${k}`} aria-labelledby={`tab-${k}`} class="season__panel" hidden={k !== initial} data-panel={k}>
         <div class="season__intro">
-          <p class="season__months">{seasonInfo[k].months}</p>
+          <p class="season__months">{seasonInfo[k].months}<span class="season__count"> · {bySeason(k).length} services</span></p>
           <p class="season__line">{seasonInfo[k].line}</p>
           {k === 'winter'
-            ? <p class="muted">Spring spots go fast. Send your request over the winter and you will be first on the list when the snow melts.</p>
-            : <p class="muted">These are booking now.</p>}
-          <a href="/contact" class="text-link">Get a free quote <Icon name="arrow-right" /></a>
+            ? <p class="muted season__note">Spring spots go fast. Send your request over the winter and you will be first on the list when the snow melts.</p>
+            : <p class="muted season__note">These are booking now.</p>}
+          <a href="/contact" class="text-link season__link">Get a free quote <Icon name="arrow-right" /></a>
         </div>
         <ul class="season__grid">
           {bySeason(k).map((s) => (
@@ -88,6 +88,27 @@ const bySeason = (k: Key) => (k === 'winter' ? services.filter((s) => s.slug ===
   .season__name { font-weight: 700; }
   .season__desc { font-size: 0.92rem; color: var(--ink-soft); line-height: 1.4; margin-bottom: 0.6rem; }
   .season__price { margin-top: auto; align-self: flex-start; padding: 0.15rem 0.55rem; border-radius: var(--r-pill); background: var(--lime-400); font-size: 0.8rem; font-weight: 700; }
+  .season__count { display: none; }
+  @media (max-width: 640px) {
+    /* Phones: intro, then a swipeable row of compact cards, then the link */
+    .season__head { margin-bottom: 1.5rem; }
+    .season__panel { display: flex; flex-direction: column; align-items: stretch; gap: 1.25rem; }
+    .season__intro { display: contents; }
+    .season__months { order: 1; margin: 0; }
+    .season__count { display: inline; font-weight: 600; color: var(--ink-soft); }
+    .season__line { order: 2; margin: -0.75rem 0 0; font-size: 1.3rem; }
+    .season__note { display: none; }
+    .season__grid {
+      order: 3; display: flex; gap: 0.6rem; min-width: 0;
+      overflow-x: auto; scroll-snap-type: x mandatory; scrollbar-width: none;
+      margin-inline: calc(var(--gutter) * -1); padding: 4px var(--gutter) 6px;
+      scroll-padding-inline: var(--gutter);
+    }
+    .season__grid::-webkit-scrollbar { display: none; }
+    .season__grid li { flex: 0 0 68%; scroll-snap-align: start; }
+    .season__card { min-height: 138px; }
+    .season__link { order: 4; align-self: flex-start; }
+  }
   @media (max-width: 860px) {
     .season__panel { grid-template-columns: 1fr; }
     .season__tabs { width: 100%; overflow-x: auto; padding: 6px; }

@@ -8,4 +8,8 @@ export default defineConfig({
   trailingSlash: 'never',
   build: { format: 'file' },
   devToolbar: { enabled: false },
+  vite: {
+    // Tells the quote form which host it was built on (Netlify has built-in form handling, Vercel does not)
+    define: { 'import.meta.env.PUBLIC_HOST': JSON.stringify(process.env.NETLIFY ? 'netlify' : process.env.VERCEL ? 'vercel' : '') },
+  },
 });

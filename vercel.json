@@ -1,0 +1,98 @@
+{
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "cleanUrls": true,
+  "trailingSlash": false,
+  "redirects": [
+    {
+      "source": "/post/enhancing-curb-appeal-in-guelph-a-comprehensive-guide-to-professional-sod-installation-and-care-by",
+      "destination": "/sod-installation-guelph",
+      "permanent": false
+    },
+    {
+      "source": "/post/how-to-safeguard-your-outdoor-plants-during-winter-pro-tips-for-winter-plant-protection",
+      "destination": "/blog",
+      "permanent": false
+    },
+    {
+      "source": "/post/growing-sod-in-shade-tips-and-tricks-for-a-beautiful-lawn",
+      "destination": "/blog",
+      "permanent": false
+    },
+    {
+      "source": "/post/tips-for-growing-lush-sod-on-clay-soil",
+      "destination": "/blog",
+      "permanent": false
+    },
+    {
+      "source": "/post/will-sod-grow-on-gravel",
+      "destination": "/blog",
+      "permanent": false
+    },
+    {
+      "source": "/post/the-secrets-to-successful-sod-growth-on-sand",
+      "destination": "/blog",
+      "permanent": false
+    },
+    {
+      "source": "/post/how-to-create-a-base-layer-for-stone-or-sheds",
+      "destination": "/stone-installation-guelph",
+      "permanent": false
+    },
+    {
+      "source": "/post/how-to-stay-safe-in-the-heat-when-working-in-landscaping-or-lawn-maintenance",
+      "destination": "/blog",
+      "permanent": false
+    },
+    {
+      "source": "/post/leaf-it-alone-lawn-care-landscaping-services",
+      "destination": "/services",
+      "permanent": false
+    },
+    {
+      "source": "/post/don-t-get-too-excited-why-planting-in-early-spring-may-be-a-waste-of-time",
+      "destination": "/blog",
+      "permanent": false
+    },
+    {
+      "source": "/post/low-budget-simple-diy-landscaping-transform-your-yard-on-a-shoestring",
+      "destination": "/blog",
+      "permanent": false
+    },
+    {
+      "source": "/post/nematodes-how-to-use-them-and-the-benefits-to-your-lawn",
+      "destination": "/blog",
+      "permanent": false
+    },
+    {
+      "source": "/post/nematodes-and-your-garden-the-ultimate-guide",
+      "destination": "/blog",
+      "permanent": false
+    },
+    {
+      "source": "/post/why-hiring-a-professional-lawn-care-expert-is-vital-for-your-lawn-s-health-and-appearance",
+      "destination": "/blog",
+      "permanent": false
+    },
+    {
+      "source": "/post/lawn-care-faq-s",
+      "destination": "/faq",
+      "permanent": true
+    },
+    {
+      "source": "/post/the-ultimate-guide-to-landscaping-lawn-care-and-plant-maintenance",
+      "destination": "/blog",
+      "permanent": false
+    }
+  ],
+  "headers": [
+    {
+      "source": "/_astro/(.*)",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "public, max-age=31536000, immutable"
+        }
+      ]
+    }
+  ]
+}

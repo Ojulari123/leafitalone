@@ -17,6 +17,17 @@ No. It's a static site: plain HTML/CSS/JS files with no server code and no datab
 - **Netlify (recommended):** works automatically through Netlify Forms. No setup, no code.
 - **Any other host (Vercel, Cloudflare Pages…):** create a free form at [formspree.io](https://formspree.io) and set `PUBLIC_FORM_ENDPOINT` to its URL in the host's environment variables (see `.env.example`).
 
+## Deploy on Vercel (current host)
+
+`vercel.json` turns on clean URLs (so `/about` serves `about.html`) and carries the old Wix blog redirects.
+
+**Quote form on Vercel:** Vercel has no built-in form handling, so:
+1. Create a free form at [formspree.io](https://formspree.io) with Josh@leafitalone.ca as the recipient.
+2. In Vercel: **Project → Settings → Environment Variables**, add `PUBLIC_FORM_ENDPOINT` = the Formspree URL (e.g. `https://formspree.io/f/abcdwxyz`), for Production and Preview.
+3. Redeploy, then send a test quote with a photo.
+
+Until that variable is set, the form opens the visitor's email app with the request filled in and addressed to Josh, so no leads are lost (photos can't be attached that way).
+
 ## Deploy on Netlify
 
 1. In Netlify, choose **Add new site → Import from Git → GitHub** and pick `Ojulari123/leafitalone`. Netlify reads the build settings from `netlify.toml` (`npm run build`, publish `dist`, Node 22).

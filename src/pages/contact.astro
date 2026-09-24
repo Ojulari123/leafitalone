@@ -333,6 +333,7 @@ const review = reviews[0];
 
   .qerr { display: flex; gap: 0.6rem; align-items: flex-start; margin: 1rem 0 0; padding: 0.85rem 1rem; border-radius: 12px; background: #fdecea; color: #8c1d16; font-weight: 600; }
   .qerr[hidden] { display: none; }
+  .qerr.qerr--info { background: var(--lime-100); color: var(--moss-900); }
   .qerr :global(svg) { flex: none; width: 20px; height: 20px; margin-top: 0.1rem; }
   .qnav { display: flex; justify-content: space-between; align-items: center; gap: 1rem; margin-top: 2rem; padding-top: 1.5rem; border-top: 1px solid var(--line); }
   .qnav .btn--ghost { padding-left: 1rem; }
@@ -485,11 +486,27 @@ const review = reviews[0];
     if (sending) return;
     const err = form.querySelector<HTMLElement>('[data-err-submit]')!;
     err.hidden = true;
+    err.classList.remove('qerr--info');
     sending = true;
     btn.setAttribute('aria-disabled', 'true');
     btnText.textContent = 'Sending…';
     const endpoint = import.meta.env.PUBLIC_FORM_ENDPOINT as string | undefined;
     if (import.meta.env.DEV && !endpoint) { location.href = '/thank-you'; return; }
+    // No form service on this host yet: hand the request to the visitor's email app instead of losing it
+    if (!endpoint && import.meta.env.PUBLIC_HOST !== 'netlify') {
+      const data = new FormData(form);
+      const skip = new Set(['form-name', 'bot-field', 'services', 'photos']);
+      const lines = [...data.entries()].filter(([k, v]) => !skip.has(k) && typeof v === 'string' && v.trim()).map(([k, v]) => `${k.replace(/_/g, ' ')}: ${v}`);
+      const body = `Quote request from leafitalone.ca\n\n${lines.join('\n')}`;
+      location.href = `mailto:Josh@leafitalone.ca?subject=${encodeURIComponent('Quote request: ' + (data.get('services_list') || 'yard work'))}&body=${encodeURIComponent(body)}`;
+      err.hidden = false;
+      err.classList.add('qerr--info');
+      err.querySelector('span')!.textContent = 'Your email app should open with your request filled in. Press send there to reach Josh. If nothing opened, call 519-400-0237.';
+      sending = false;
+      btn.removeAttribute('aria-disabled');
+      btnText.textContent = 'Send my quote request';
+      return;
+    }
     try {
       const res = await fetch(endpoint || '/', { method: 'POST', body: new FormData(form), headers: { Accept: 'application/json' } });
       if (!res.ok) throw new Error(String(res.status));

@@ -334,6 +334,7 @@ const lorna = reviews[0];
 
   /* Trust */
   .trust { background: var(--white); border-bottom: 1px solid var(--line); }
+  @media (max-width: 640px) { .trust { display: none; } }
   .trust__row { display: grid; grid-template-columns: repeat(4, 1fr); }
   .trust__item {
     display: flex; align-items: center; gap: 0.8rem; padding: 1.4rem 1rem;
@@ -498,6 +499,7 @@ const lorna = reviews[0];
   .area__names span { white-space: nowrap; }
   .area__names span:not(:last-child)::after { content: '/'; margin: 0 0.45em; color: var(--moss-300); font-weight: 400; }
   .area__names .area__more { color: var(--moss-500); font-weight: 600; }
+  @media (max-width: 640px) { .area__names { display: none; } .area__copy .lede { margin-bottom: 1.25rem; } }
   .area__map {
     position: relative; border-radius: 26px; overflow: hidden;
     background: var(--mist); box-shadow: var(--shadow-lg);
