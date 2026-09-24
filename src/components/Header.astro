@@ -49,10 +49,7 @@ const groups = Object.keys(groupLabels) as ServiceGroup[];
                       <ul>
                         {services.filter((s) => s.group === g).map((s) => (
                           <li>
-                            <a href={`/${s.slug}`} class="mega__link">
-                              <span class="mega__icon"><Icon name={s.icon} /></span>
-                              <span>{s.name}</span>
-                            </a>
+                            <a href={`/${s.slug}`} class="mega__link">{s.name}</a>
                           </li>
                         ))}
                       </ul>
@@ -97,17 +94,34 @@ const groups = Object.keys(groupLabels) as ServiceGroup[];
   <nav class="mobile-menu__inner wrap" aria-label="Mobile">
     <ul class="mobile-menu__list">
       <li style="--i:0"><a href="/">Home</a></li>
-      {nav.map((item, i) => (
-        <li style={`--i:${i + 1}`}><a href={item.href} aria-current={isActive(item.href) ? 'page' : undefined}>{item.label}</a></li>
-      ))}
-      <li style={`--i:${nav.length + 1}`}><a href="/faq">FAQ</a></li>
+      {nav.map((item, i) =>
+        item.href === '/services' ? (
+          <li style={`--i:${i + 1}`} class="mm-services">
+            <button class="mm-services__toggle" aria-expanded="false" aria-controls="mm-services-panel" data-mm-toggle>
+              <span>Services</span>
+              <Icon name="caret-down" weight="bold" />
+            </button>
+            <div class="mm-services__panel" id="mm-services-panel" hidden data-mm-panel>
+              <a href="/services" class="mm-services__all">All services <Icon name="arrow-right" /></a>
+              {groups.map((g) => (
+                <div class="mm-services__group">
+                  <p class="mm-services__title">{groupLabels[g].name}</p>
+                  <ul>
+                    {services.filter((s) => s.group === g).map((s) => (
+                      <li><a href={`/${s.slug}`} aria-current={path === `/${s.slug}` ? 'page' : undefined}>{s.name}</a></li>
+                    ))}
+                  </ul>
+                </div>
+              ))}
+            </div>
+          </li>
+        ) : (
+          <li style={`--i:${i + 1}`}><a href={item.href} aria-current={isActive(item.href) ? 'page' : undefined}>{item.label}</a></li>
+        )
+      )}
+      <li style={`--i:${nav.length + 1}`}><a href="/projects" aria-current={isActive('/projects') ? 'page' : undefined}>Projects</a></li>
+      <li style={`--i:${nav.length + 2}`}><a href="/faq">FAQ</a></li>
     </ul>
-    <div class="mobile-menu__services">
-      <p class="mobile-menu__label">Services</p>
-      <div class="mobile-menu__chips">
-        {services.map((s) => <a class="chip" href={`/${s.slug}`}>{s.short}</a>)}
-      </div>
-    </div>
     <div class="mobile-menu__cta">
       <a href="/contact" class="btn">Get a free quote<span class="btn__icon"><Icon name="arrow-right" weight="bold" /></span></a>
       <a href={site.phoneHref} class="btn btn--ghost"><Icon name="phone" />Call {site.phone}</a>
@@ -210,16 +224,11 @@ const groups = Object.keys(groupLabels) as ServiceGroup[];
   }
   .mega ul { list-style: none; display: grid; gap: 0.15rem; }
   .mega__link {
-    display: flex; align-items: center; gap: 0.55rem;
-    padding: 0.45rem 0.5rem; margin-left: -0.5rem;
+    display: flex; align-items: center;
+    padding: 0.5rem 0.6rem; margin-left: -0.6rem;
     border-radius: 10px; font-weight: 600; font-size: 0.95rem; line-height: 1.25; text-decoration: none;
   }
   .mega__link:hover { background: var(--mist); }
-  .mega__icon {
-    display: grid; place-items: center; flex: none;
-    width: 30px; height: 30px; border-radius: 9px; background: var(--lime-100); color: var(--moss-600);
-  }
-  .mega__icon :global(svg) { width: 17px; height: 17px; }
   .mega__foot {
     display: flex; justify-content: space-between; align-items: center; gap: 1rem;
     margin-top: 1.25rem; padding-top: 1rem; border-top: 1px solid var(--line);
@@ -279,11 +288,36 @@ const groups = Object.keys(groupLabels) as ServiceGroup[];
     text-decoration: none; border-bottom: 1px solid var(--line);
   }
   .mobile-menu__list a[aria-current='page'] { color: var(--moss-600); }
-  .mobile-menu__label {
-    margin: 2rem 0 0.75rem; font-family: var(--font-display); font-weight: 700; font-size: 0.8rem;
+  .mm-services { border-bottom: 1px solid var(--line); }
+  .mm-services__toggle {
+    display: flex; justify-content: space-between; align-items: center; width: 100%;
+    padding: 0.55rem 0; border: 0; background: none; cursor: pointer; text-align: left;
+    font-family: var(--font-display); font-stretch: 82%; font-weight: 800; font-size: 2rem; color: var(--ink);
+  }
+  .mm-services__toggle :global(svg) { width: 22px; height: 22px; color: var(--moss-600); transition: transform 200ms var(--ease-out); }
+  .mm-services__toggle[aria-expanded='true'] :global(svg) { transform: rotate(180deg); }
+  .mm-services__panel { padding: 0.25rem 0 1.25rem; }
+  .mm-services__panel[hidden] { display: none; }
+  @media (prefers-reduced-motion: no-preference) {
+    .mm-services__panel:not([hidden]) { animation: menuIn 220ms var(--ease-out); }
+  }
+  .mobile-menu__list .mm-services__all {
+    display: inline-flex; align-items: center; gap: 0.35rem; min-height: 44px; padding: 0;
+    border: 0; font-family: var(--font-body); font-size: 1rem; font-weight: 700; color: var(--moss-600);
+    text-decoration: underline; text-decoration-color: var(--lime-400); text-decoration-thickness: 2px; text-underline-offset: 4px;
+  }
+  .mm-services__all :global(svg) { width: 16px; height: 16px; }
+  .mm-services__group { margin-top: 0.75rem; }
+  .mm-services__title {
+    margin: 0 0 0.15rem; font-family: var(--font-display); font-weight: 700; font-size: 0.78rem;
     letter-spacing: 0.08em; text-transform: uppercase; color: var(--moss-500);
   }
-  .mobile-menu__chips { display: flex; flex-wrap: wrap; gap: 0.5rem; }
+  .mm-services__group ul { list-style: none; }
+  .mobile-menu__list .mm-services__group a {
+    display: flex; align-items: center; min-height: 44px; padding: 0;
+    border: 0; font-family: var(--font-body); font-size: 1.1rem; font-weight: 600;
+  }
+  .mobile-menu__list .mm-services__group a[aria-current='page'] { color: var(--moss-600); }
   .mobile-menu__cta { display: grid; gap: 0.75rem; margin-top: 2rem; }
   .mobile-menu__cta .btn { justify-content: space-between; }
   .mobile-menu__cta .btn--ghost { justify-content: center; }
@@ -346,6 +380,13 @@ const groups = Object.keys(groupLabels) as ServiceGroup[];
     ['main', 'footer', '.mbar', '.topbar'].forEach((sel) => { const el = document.querySelector<HTMLElement>(sel); if (el) el.inert = open; });
   };
   burger?.addEventListener('click', () => setMenu(burger.getAttribute('aria-expanded') !== 'true'));
+
+  // Mobile menu: Services expands in place (open by default on service pages)
+  const mmToggle = document.querySelector<HTMLButtonElement>('[data-mm-toggle]');
+  const mmPanel = document.querySelector<HTMLElement>('[data-mm-panel]');
+  const setServices = (open: boolean) => { mmToggle?.setAttribute('aria-expanded', String(open)); if (mmPanel) mmPanel.hidden = !open; };
+  mmToggle?.addEventListener('click', () => setServices(mmToggle.getAttribute('aria-expanded') !== 'true'));
+  if (mmPanel?.querySelector('[aria-current="page"]')) setServices(true);
   document.addEventListener('keydown', (e) => {
     if (e.key === 'Escape' && burger?.getAttribute('aria-expanded') === 'true') { setMenu(false); burger.focus(); }
   });

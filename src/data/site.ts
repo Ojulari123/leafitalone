@@ -26,9 +26,8 @@ export const site = {
 
 export const nav = [
   { label: 'Services', href: '/services' },
-  { label: 'Projects', href: '/projects' },
-  { label: 'Reviews', href: '/testimonials' },
   { label: 'About', href: '/about' },
   { label: 'Service areas', href: '/service-areas' },
+  { label: 'Reviews', href: '/testimonials' },
   { label: 'Blog', href: '/blog' },
 ];
